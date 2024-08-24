@@ -60,7 +60,7 @@ void Manager::registerHook() {
         auto hook = std::make_unique<C>(this);
         this->hooks.push_back(std::move(hook));
     } else {
-        // Cba as I'm on mobile
+        Debugger::log("Hook " + name + " has already been initialized!");
     };
 };
 
