@@ -52,7 +52,7 @@ void Manager::registerHook() {
 
     std::string name = C(this).getName();
 
-    auto iter = std::find_if(this->hooks.begin(), this->hooks.end(), [&](const std::unique_ptr<BaseHook>>& hook) {
+    auto iter = std::find_if(this->hooks.begin(), this->hooks.end(), [&](const std::unique_ptr<BaseHook>& hook) {
         return hook.get()->getName() == name;
     });
 
