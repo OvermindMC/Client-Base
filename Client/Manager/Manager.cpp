@@ -102,6 +102,6 @@ void Manager::registerMod() {
     C* category = this->getCategory<C>();
 
     if(category) {
-        category->registerMod(std::make_unique<M>(category));
+        category->registerMod<M>();
     };
 };
