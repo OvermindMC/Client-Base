@@ -1,7 +1,7 @@
 #include "Client/Client.h"
 
 void init(HINSTANCE hInstance) {
-    Client* client = new Client("Cupid");
+    Client* client = new Client("Client");
 
     delete client;
     FreeLibraryAndExitThread(Mem::getDll(), 0);
