@@ -7,10 +7,10 @@ ImDrawList* Renderer::drawList = nullptr;
 IDXGISwapChain3* Renderer::sc = nullptr;
 ID3D11Device* Renderer::device = nullptr;
 
-ID3D11DeviceContext* Renderer::ctx = nullptr;
-ID3D11Texture2D* Renderer::d3dT2d = nullptr;
-IDXGISurface* Renderer::surface = nullptr;
-ID3D11RenderTargetView* Renderer::tv = nullptr;
+Microsoft::WRL::ComPtr<ID3D11DeviceContext> Renderer::ctx = nullptr;
+Microsoft::WRL::ComPtr<ID3D11Texture2D> Renderer::d3dT2d = nullptr;
+Microsoft::WRL::ComPtr<IDXGISurface> Renderer::surface = nullptr;
+Microsoft::WRL::ComPtr<ID3D11RenderTargetView> Renderer::tv = nullptr;
 
 bool Renderer::Init(IDXGISwapChain3* SwapChain) {
     Renderer::sc = SwapChain;
@@ -60,14 +60,14 @@ bool Renderer::InitSub() {
         return false;
     };
 
-    if(FAILED(Renderer::device->CreateRenderTargetView(Renderer::d3dT2d, nullptr, &Renderer::tv))) {
+    if(FAILED(Renderer::device->CreateRenderTargetView(Renderer::d3dT2d.Get(), nullptr, Renderer::tv.GetAddressOf()))) {
         return false;
     };
 
     if(!Renderer::init) {
         Renderer::init = true;
         ImGui_ImplWin32_Init((HWND)FindWindowA(nullptr, "Minecraft"));
-        ImGui_ImplDX11_Init(Renderer::device, Renderer::ctx);
+        ImGui_ImplDX11_Init(Renderer::device, Renderer::ctx.Get());
     };
     
     return true;
@@ -78,24 +78,12 @@ void Renderer::CleanUp(bool cleanAll) {
 
     if(Renderer::ctx) {
         Renderer::ctx->Flush();
-        Renderer::ctx->Release();
-        Renderer::ctx = nullptr;
     };
 
-    if(Renderer::d3dT2d) {
-        Renderer::d3dT2d->Release();
-        Renderer::d3dT2d = nullptr;
-    };
-
-    if(Renderer::surface) {
-        Renderer::surface->Release();
-        Renderer::surface = nullptr;
-    };
-
-    if(Renderer::tv) {
-        Renderer::tv->Release();
-        Renderer::tv = nullptr;
-    };
+    Renderer::ctx.Reset();
+    Renderer::d3dT2d.Reset();
+    Renderer::surface.Reset();
+    Renderer::tv.Reset();
 
     if(cleanAll && ImGui::GetCurrentContext()) {
         Renderer::drawList = nullptr;
@@ -125,7 +113,7 @@ void Renderer::EndFrame() {
     ImGui::EndFrame();
     ImGui::Render();
 
-    Renderer::ctx->OMSetRenderTargets(1, &Renderer::tv, nullptr);
+    Renderer::ctx->OMSetRenderTargets(1, Renderer::tv.GetAddressOf(), nullptr);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 };
 
