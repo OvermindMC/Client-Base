@@ -31,8 +31,10 @@ Manager::~Manager() {
     this->categories.clear();
 
     Renderer::CleanUp(true);
+    OverFX::CleanUp(true);
 
-    Sleep(10);
+    MH_DisableHook(MH_ALL_HOOKS);
+    std::this_thread::yield();
     MH_Uninitialize();
 };
 
