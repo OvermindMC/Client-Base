@@ -43,9 +43,9 @@ private:
     static ID3D11Device* device;
     static ImDrawList* drawList;
 
-    static ID3D11DeviceContext* ctx;
-    static ID3D11Texture2D* d3dT2d;
+    static Microsoft::WRL::ComPtr<ID3D11DeviceContext> ctx;
+    static Microsoft::WRL::ComPtr<ID3D11Texture2D> d3dT2d;
     
-    static IDXGISurface* surface;
-    static ID3D11RenderTargetView* tv;
+    static Microsoft::WRL::ComPtr<IDXGISurface> surface;
+    static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> tv;
 };
