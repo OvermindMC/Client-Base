@@ -30,6 +30,8 @@ Manager::~Manager() {
     this->sigMap.clear();
     this->categories.clear();
 
+    Renderer::CleanUp(true);
+
     Sleep(10);
     MH_Uninitialize();
 };

@@ -11,13 +11,22 @@ public:
         Manager* mgr = this->getMgr();
 
         if(mgr && mgr->isTicking()) {
-            for(auto category : mgr->getCategories()) {
-                for(const auto mod : category->getModules()) {
-                    if(mod->isEnabled()) {
-                        mod->onImRender();
+            bool cleanAll = !Renderer::Init(SS);
+            if(!cleanAll) {
+                Renderer::NewFrame();
+
+                for(auto category : mgr->getCategories()) {
+                    for(const auto mod : category->getModules()) {
+                        if(mod->isEnabled()) {
+                            mod->onImRender();
+                        };
                     };
                 };
+
+                Renderer::EndFrame();
             };
+
+            Renderer::CleanUp(cleanAll);
         };
 
         return this->func(SS, SI, F);
