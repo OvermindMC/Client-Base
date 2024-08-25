@@ -15,5 +15,7 @@ public:
     void onTick() override;
     void onEnable() override;
     void onDisable() override;
+
+    void onImRender() override;
     void onLevel(void*) override;
 };

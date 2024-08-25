@@ -21,6 +21,8 @@ public:
     virtual void onTick() {};
     virtual void onEnable() {};
     virtual void onDisable() {};
+    
+    virtual void onImRender() {};
     virtual void onLevel(void*) {};
 private:
     Category* cPtr = nullptr;

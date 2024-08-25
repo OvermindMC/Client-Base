@@ -1,12 +1,14 @@
 #include "Manager.h"
 
 #include "Hooks/Subs/Level_Tick.h"
+#include "Hooks/Subs/Present_Tick.h"
 
 #include "Modules/Module/Other/Parent.h"
 
 Manager::Manager(Client* client_ptr) : ciPtr(client_ptr) {
     if(MH_Initialize() == MH_OK) {
         this->registerHook<LevelTick_Hook>();
+        this->registerHook<PresentTick_Hook>();
     };
 
     this->registerMod<Other, TestMod>();

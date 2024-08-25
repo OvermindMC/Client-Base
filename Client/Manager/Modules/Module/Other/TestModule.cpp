@@ -29,6 +29,10 @@ void TestMod::onDisable() {
     );
 };
 
+void TestMod::onImRender() {
+    Debugger::log("onImRender");
+};
+
 void TestMod::onLevel(void* level_ptr) {
     Debugger::log("onLevel");
 };
