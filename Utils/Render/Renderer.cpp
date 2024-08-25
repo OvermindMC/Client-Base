@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "OverFX/OverFX.h"
 #include "../Debugger/Debugger.h"
 
 bool Renderer::fell = false, Renderer::init = false, Renderer::initImCtx = false, Renderer::postFrame = false;
@@ -103,6 +104,7 @@ void Renderer::NewFrame() {
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
+    OverFX::NewFrame(Renderer::device, Renderer::surface.Get());
     Renderer::drawList = ImGui::GetBackgroundDrawList();
 };
 
@@ -115,6 +117,8 @@ void Renderer::EndFrame() {
 
     Renderer::ctx->OMSetRenderTargets(1, Renderer::tv.GetAddressOf(), nullptr);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    
+    OverFX::EndFrame();
 };
 
 void Renderer::RenderText(ImVec2 textPos, std::string text, float fontSize, ImColor color) {
