@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../Client.h"
+
+#include "Event/Dispatcher.h"
 #include "Sigs/Sig.h"
 
 class BaseHook;

@@ -4,7 +4,7 @@
 
 class Module {
 public:
-    Module(Category* c) {
+    Module(Category* c) : evH(std::make_unique<EventHandler>(this)) {
         this->cPtr = c;
     };
 
@@ -26,5 +26,6 @@ public:
     virtual void onLevel(void*) {};
 private:
     Category* cPtr = nullptr;
+    std::unique_ptr<EventHandler> evH;
     std::pair<bool, bool> state = { 0, 0 };
 };
