@@ -22,13 +22,19 @@ public:
 template<EventBase::Type T, EventBase::Priority P, typename... Args>
 class Event : public EventBase {
 public:
-    Event(std::function<void(Args...)> event_callback) : callback(event_callback) {};
-    
+    Event(std::function<void(Args...)> event_callback) : callback(std::move(event_callback)) {};
+
     EventBase::Type getType() const override {
         return T;
     };
     EventBase::Priority getPriority() const override {
         return P;
+    };
+
+    void call(Args... args) {
+        if(this->callback) {
+            this->callback(args...);
+        };
     };
 private:
     std::function<void(Args...)> callback;
