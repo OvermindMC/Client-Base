@@ -56,18 +56,8 @@ template<class C>
 void Manager::registerHook() {
     static_assert(std::is_base_of<BaseHook, C>::value, "Template Class type must derive from BaseHook");
 
-    std::string name = C(this).getName();
-
-    auto iter = std::find_if(this->hooks.begin(), this->hooks.end(), [&](const std::unique_ptr<BaseHook>& hook) {
-        return hook.get()->getName() == name;
-    });
-
-    if(iter == this->hooks.end()) {
-        auto hook = std::make_unique<C>(this);
-        this->hooks.push_back(std::move(hook));
-    } else {
-        Debugger::log("Hook " + name + " has already been initialized!");
-    };
+    auto hook = std::make_unique<C>(this);
+    this->hooks.push_back(std::move(hook));
 };
 
 template<typename C, typename T>
