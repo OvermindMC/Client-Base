@@ -14,15 +14,9 @@ public:
             bool cleanAll = !Renderer::Init(SS);
             if(!cleanAll) {
                 Renderer::NewFrame();
-
-                for(auto category : mgr->getCategories()) {
-                    for(const auto mod : category->getModules()) {
-                        if(mod->isEnabled()) {
-                            mod->onImRender();
-                        };
-                    };
-                };
-
+                
+                mgr->dispatchEvent<EventBase::Type::onRender>();
+                
                 Renderer::EndFrame();
             };
 

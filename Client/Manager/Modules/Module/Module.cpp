@@ -1,5 +1,7 @@
 #include "Module.h"
 
+Module::Module(Category* c) : cPtr(c), evH(std::make_unique<EventHandler>(this)) {};
+
 Category* Module::getCategory() const {
     return this->cPtr;
 };
@@ -13,21 +15,25 @@ void Module::baseTick() {
         this->state.second = this->state.first;
 
         if(this->state.first) {
-            this->onEnable();
+            this->evH->dispatchEvent<EventBase::Type::onEnable>();
         } else {
-            this->onDisable();
+            this->evH->dispatchEvent<EventBase::Type::onDisable>();
         };
     };
 
     if(this->state.first) {
-        this->onTick();
+        this->evH->dispatchEvent<EventBase::Type::onTick>();
     };
+};
+
+void Module::setIsEnabled(bool state) {
+    this->state.first = state;
 };
 
 bool Module::isEnabled() const {
     return this->state.first;
 };
 
-void Module::setIsEnabled(bool state) {
-    this->state.first = state;
+bool Module::wasEnabled() const {
+    return this->state.second;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <algorithm>
 #include <MinHook.h>
 #include <Windows.h>
 #include <assert.h>

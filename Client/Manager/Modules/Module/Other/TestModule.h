@@ -4,18 +4,6 @@
 
 class TestMod : public Module {
 public:
-    TestMod(Category* c) : Module(c) {
-        this->setIsEnabled(true);
-    };
-
-    std::string getName() const override {
-        return "Test Module";
-    };
-
-    void onTick() override;
-    void onEnable() override;
-    void onDisable() override;
-
-    void onImRender() override;
-    void onLevel(void*) override;
+    TestMod(Category* c);
+    std::string getName() const override;
 };

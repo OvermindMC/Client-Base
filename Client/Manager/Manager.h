@@ -32,6 +32,35 @@ public:
 
     template<class C, class M>
     void registerMod();
+
+    template<EventBase::Type T, typename... Args>
+    void dispatchEvent(Args... args) {
+        std::vector<EventBase*> list;
+
+        for(const auto& [ type, category ] : this->categories) {
+            for(const auto mod : category->getModules()) {
+                for(const auto ev : mod->getEvents<T>()) {
+                    list.push_back(ev);
+                };
+            };
+        };
+
+        std::sort(list.begin(), list.end(), [](EventBase* a, EventBase* b) {
+            return a->getPriority() > b->getPriority();
+        });
+
+        for (auto& event : list) {
+            if (auto specificEvent = dynamic_cast<Event<T, EventBase::Priority::Low, Args...>*>(event)) {
+                specificEvent->call(std::forward<Args>(args)...);
+            }
+            else if (auto specificEvent = dynamic_cast<Event<T, EventBase::Priority::Medium, Args...>*>(event)) {
+                specificEvent->call(std::forward<Args>(args)...);
+            }
+            else if (auto specificEvent = dynamic_cast<Event<T, EventBase::Priority::High, Args...>*>(event)) {
+                specificEvent->call(std::forward<Args>(args)...);
+            };
+        };
+    };
 private:
     Client* ciPtr = nullptr;
     bool isTickingState = false;

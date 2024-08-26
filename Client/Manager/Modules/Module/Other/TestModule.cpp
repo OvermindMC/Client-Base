@@ -1,29 +1,39 @@
 #include "TestModule.h"
 
-void TestMod::onTick() {
-    //
-};
+TestMod::TestMod(Category* c) : Module(c) {
+    this->setIsEnabled(true);
 
-void TestMod::onEnable() {
-    Debugger::log(
-        this->getName() + " Enabled!"
+    this->registerEvent<EventBase::Type::onTick, EventBase::Priority::High>(
+        [&]() {
+            //
+        }
+    );
+
+    this->registerEvent<EventBase::Type::onEnable, EventBase::Priority::High>(
+        [&]() {
+            Debugger::log("OnEnable");
+        }
+    );
+
+    this->registerEvent<EventBase::Type::onDisable, EventBase::Priority::High>(
+        [&]() {
+            Debugger::log("OnDisable");
+        }
+    );
+
+    this->registerEvent<EventBase::Type::onLevel, EventBase::Priority::High>(
+        [&]() {
+            Debugger::log("OnLevel");
+        }
+    );
+
+    this->registerEvent<EventBase::Type::onRender, EventBase::Priority::High>(
+        [&]() {
+            Debugger::log("OnRender");
+        }
     );
 };
 
-void TestMod::onDisable() {
-    Debugger::log(
-        this->getName() + " Disabled!"
-    );
-};
-
-void TestMod::onImRender() {
-    Renderer::RenderText(
-        ImVec2(
-            10.f, 10.f
-        ), "Hello, World!", 20.f, ImColor(255.f, 255.f, 255.f, 1.f)
-    );
-};
-
-void TestMod::onLevel(void* level_ptr) {
-    Debugger::log("onLevel");
+std::string TestMod::getName() const {
+    return "Test Module";
 };

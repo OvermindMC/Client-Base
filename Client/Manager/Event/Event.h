@@ -6,7 +6,7 @@
 class EventBase {
 public:
     enum class Type {
-        onTick = 1, onEnable = 2, onDisable = 3
+        onTick = 1, onEnable = 2, onDisable = 3, onLevel = 4, onRender = 5
     };
 
     enum class Priority {
@@ -22,7 +22,7 @@ public:
 template<EventBase::Type T, EventBase::Priority P, typename... Args>
 class Event : public EventBase {
 public:
-    Event(std::function<void(Args...)> event_callback) : callback(std::move(event_callback)) {};
+    Event(std::function<void(Args...)> event_callback) : callback(event_callback) {};
 
     EventBase::Type getType() const override {
         return T;

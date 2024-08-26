@@ -11,13 +11,7 @@ public:
         Manager* mgr = this->getMgr();
 
         if(mgr && mgr->isTicking()) {
-            for(auto category : mgr->getCategories()) {
-                for(const auto mod : category->getModules()) {
-                    if(mod->isEnabled()) {
-                        mod->onLevel(level);
-                    };
-                };
-            };
+            mgr->dispatchEvent<EventBase::Type::onLevel>();
         };
 
         return this->func(level);
