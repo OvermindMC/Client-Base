@@ -1,8 +1,6 @@
 #include "FastSneak.h"
 
 FastSneak::FastSneak(Category* c) : Module(c) {
-    this->setIsEnabled(true);
-
     this->registerEvent<EventBase::Type::onLevel, EventBase::Priority::Low>(
         [&]() {
             Player* player = MC::getPlayer();
