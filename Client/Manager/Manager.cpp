@@ -1,6 +1,7 @@
 #include "Manager.h"
 #include "Event/Dispatcher.h"
 
+#include "Hooks/Subs/Actor_Lerp.h"
 #include "Hooks/Subs/Level_Tick.h"
 #include "Hooks/Subs/Present_Tick.h"
 
@@ -9,6 +10,7 @@
 
 Manager::Manager(Client* client_ptr) : ciPtr(client_ptr) {
     if(MH_Initialize() == MH_OK) {
+        this->registerHook<ActorLerp_Hook>();
         this->registerHook<LevelTick_Hook>();
         this->registerHook<PresentTick_Hook>();
     };
