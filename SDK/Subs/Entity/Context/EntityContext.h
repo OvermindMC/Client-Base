@@ -13,28 +13,23 @@ struct EntityContext {
     entt::basic_registry<EntityId>& enttRegistry;
     EntityId entity;
 
-    template<std::derived_from<EntityComponent> T>
-    T* tryGetComponent() {
-        return this->enttRegistry.try_get<T>(this->entity);
-    };
-
-    template<std::derived_from<EntityComponent> T>
-    const T* tryGetComponent() const {
-        return this->enttRegistry.try_get<T>(this->entity);
+    template<std::derived_from<EntityComponent>... T>
+    auto tryGetComponent() const {
+        if constexpr(sizeof...(T) == 1u) {
+            return this->enttRegistry.try_get<std::tuple_element_t<0, std::tuple<T...>>>(this->entity);
+        } else {
+            return std::make_tuple(this->enttRegistry.try_get<T>(this->entity)...);
+        };
     };
 
     template<std::derived_from<EntityComponent>... T>
     bool hasComponent() const {
-        if constexpr (sizeof...(T) > 0) {
-            return (this->enttRegistry.any_of<T>(this->entity) && ...);
-        } else {
-            return false;
-        };
+        return (this->enttRegistry.all_of<T>(this->entity) || ...);
     };
 
     template<std::derived_from<EntityComponent> T, typename... Args>
     auto addComponent(Args&&... args) -> decltype(auto) {
-        return this->enttRegistry.get_or_emplace<T>(this->entity, std::forward<Args>(args)...);
+        this->enttRegistry.emplace_or_replace<T>(this->entity, std::forward<Args>(args)...);
     };
 
     template<std::derived_from<EntityComponent>... T>
