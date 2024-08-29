@@ -4,8 +4,7 @@
 #include <string>
 
 template <typename T, typename = typename std::enable_if<std::is_same<T, int>::value || std::is_same<T, float>::value || std::is_same<T, double>::value>::type>
-class Vec2 {
-public:
+struct Vec2 {
     T x, y;
 
     Vec2(T xOff = 0, T yOff = 0) : x(xOff), y(yOff) {};
@@ -43,11 +42,11 @@ public:
         return Vec2(x / other.x, y / other.y);
     };
 
-    virtual float magnitude() const {
-        return sqrt(this->x * this->x + this->y * this->y);
+    float magnitude() const {
+        return std::sqrt(this->x * this->x + this->y * this->y);
     };
 
-    virtual std::string toStr() const {
+    std::string toStr() const {
         return std::to_string(this->x) + ", " + std::to_string(this->y);
     };
 
