@@ -42,3 +42,4 @@ target_link_libraries(Client PRIVATE minhook EnTT::EnTT libhat) # Target link li
 add_subdirectory(Client)
 add_subdirectory(Utils)
 add_subdirectory(Mem)
+add_subdirectory(SDK)
