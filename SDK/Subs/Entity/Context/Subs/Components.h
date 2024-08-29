@@ -41,6 +41,9 @@ struct ActorSetPositionRequestComponent : public EntityComponent {
     ActorSetPositionRequestComponent(const Vec3<float>& position) : mPos(position) {};
 };
 
+struct ItemInUseComponent : public EntityComponent {};
+struct BlockMovementSlowdownMultiplierComponent : public EntityComponent {};
+
 struct CollisionFlagComponent : public EntityComponent {};
 struct VerticalCollisionFlagComponent : public EntityComponent {};
 struct HorizontalCollisionFlagComponent : public EntityComponent {};
