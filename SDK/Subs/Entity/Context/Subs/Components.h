@@ -35,6 +35,12 @@ struct ActorRotationComponent : public EntityComponent {
     Vec2<float> mRot, mOldRot;
 };
 
+struct ActorSetPositionRequestComponent : public EntityComponent {
+    Vec3<float> mPos;
+
+    ActorSetPositionRequestComponent(const Vec3<float>& position) : mPos(position) {};
+};
+
 struct CollisionFlagComponent : public EntityComponent {};
 struct VerticalCollisionFlagComponent : public EntityComponent {};
 struct HorizontalCollisionFlagComponent : public EntityComponent {};
