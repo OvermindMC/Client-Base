@@ -2,6 +2,7 @@
 
 #include "../Module.h"
 
+#include "AutoSprint.h"
 #include "FastSneak.h"
 
 class Move : public Category {

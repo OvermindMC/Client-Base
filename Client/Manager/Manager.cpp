@@ -15,6 +15,7 @@ Manager::Manager(Client* client_ptr) : ciPtr(client_ptr) {
         this->registerHook<PresentTick_Hook>();
     };
 
+    this->registerMod<Move, AutoSprint>();
     this->registerMod<Move, FastSneak>();
     this->registerMod<Other, TestMod>();
 
