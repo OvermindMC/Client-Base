@@ -34,11 +34,23 @@ public:
     void registerMod();
 
     template<EventBase::Type T, typename... Args>
-    void dispatchEvent(Args... args) {
+    void dispatchEvent(Args... args, std::function<bool(Module*)> filter = nullptr) {
         std::vector<EventBase*> list;
 
         for(const auto& [ type, category ] : this->categories) {
-            for(const auto mod : category->getModules()) {
+            auto modules = category->getModules();
+
+            if(filter) {
+                modules.erase(
+                    std::remove_if(
+                        modules.begin(), modules.end(), [&](Module* m) {
+                            return !filter(m);
+                        }
+                    ), modules.end()
+                );
+            };
+
+            for(const auto mod : modules) {
                 for(const auto ev : mod->getEvents<T>()) {
                     list.push_back(ev);
                 };
