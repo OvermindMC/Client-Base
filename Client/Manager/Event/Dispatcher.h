@@ -2,13 +2,9 @@
 
 #include "Event.h"
 
-class Module;
-
 class EventHandler {
 public:
     virtual ~EventHandler() = default;
-
-    EventHandler(Module* m) : parent(m) {};
 
     template<EventBase::Type T, EventBase::Priority P, typename... Args>
     void registerEvent(std::function<void(Args...)> callback) {
@@ -62,6 +58,5 @@ public:
         return list;
     };
 private:
-    Module* parent = nullptr;
     std::map<EventBase::Type, std::vector<std::unique_ptr<EventBase>>> events;
 };
