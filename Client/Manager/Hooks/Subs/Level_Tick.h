@@ -11,7 +11,11 @@ public:
         Manager* mgr = this->getMgr();
 
         if(mgr && mgr->isTicking()) {
-            mgr->dispatchEvent<EventBase::Type::onLevel>();
+            mgr->dispatchEvent<EventBase::Type::onLevel>(
+                [&](Module* m) {
+                    return m->isEnabled();
+                }
+            );
         };
 
         return this->func(level);
