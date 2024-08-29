@@ -73,9 +73,23 @@ public:
             };
         };
     };
+
+    bool isUsingKey(uint64_t winKeyId, uint8_t state = -1) {
+        if (state != -1) {
+            keyMap[winKeyId] = (state != 0);
+            return false;
+        } else {
+            auto it = keyMap.find(winKeyId);
+            if (it != keyMap.end()) {
+                return it->second;
+            };
+            return false;
+        };
+    };
 private:
     Client* ciPtr = nullptr;
     bool isTickingState = false;
+    std::map<uint64_t, bool> keyMap;
     std::vector<std::unique_ptr<BaseHook>> hooks;
     std::map<std::string, std::unique_ptr<BaseSig>> sigMap;
     std::map<std::string, std::unique_ptr<Category>> categories;
