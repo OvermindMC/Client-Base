@@ -1,6 +1,6 @@
 #include "Module.h"
 
-Module::Module(Category* c) : cPtr(c), evH(std::make_unique<EventHandler>(this)) {};
+Module::Module(Category* c) : cPtr(c), evH(std::make_unique<EventHandler>()) {};
 
 Category* Module::getCategory() const {
     return this->cPtr;
