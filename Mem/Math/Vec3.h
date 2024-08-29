@@ -42,16 +42,16 @@ public:
         return Vec3(this->x / other.x, this->y / other.y, z / other.z);
     };
 
-    T* get() const {
-        return &this->x;
-    };
-
-    float magnitude() const {
+    float magnitude() const override {
         return sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
     };
 
     float magnitudeXZ() const {
         return sqrt(this->x * this->x + this->z * this->z);
+    };
+
+    std::string toStr() const override {
+        return std::to_string(this->x) + ", " + std::to_string(this->y) + ", " + std::to_string(this->z);
     };
 };
 
