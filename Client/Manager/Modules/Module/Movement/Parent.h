@@ -4,6 +4,7 @@
 
 #include "AutoSprint.h"
 #include "FastSneak.h"
+#include "NoSlow.h"
 
 class Move : public Category {
 public:
