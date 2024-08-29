@@ -7,4 +7,6 @@ private:
     virtual ~Actor();
 public:
     EntityContext ctx;
+
+    bool isMoving();
 };
