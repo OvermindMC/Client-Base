@@ -45,6 +45,14 @@ public:
     T* get() const {
         return &this->x;
     };
+
+    float magnitude() const {
+        return sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
+    };
+
+    float magnitudeXZ() const {
+        return sqrt(this->x * this->x + this->z * this->z);
+    };
 };
 
 template <typename T>
