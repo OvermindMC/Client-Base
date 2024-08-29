@@ -15,7 +15,11 @@ public:
             if(!cleanAll) {
                 Renderer::NewFrame();
                 
-                mgr->dispatchEvent<EventBase::Type::onRender>();
+                mgr->dispatchEvent<EventBase::Type::onRender>(
+                    [&](Module* m) {
+                        return m->isEnabled();
+                    }
+                );
                 
                 Renderer::EndFrame();
             };
