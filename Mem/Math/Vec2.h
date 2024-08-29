@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include <string>
 
 template <typename T, typename = typename std::enable_if<std::is_same<T, int>::value || std::is_same<T, float>::value || std::is_same<T, double>::value>::type>
 class Vec2 {
@@ -42,8 +43,16 @@ public:
         return Vec2(x / other.x, y / other.y);
     };
 
-    T* get() const {
-        return &this->x;
+    virtual float magnitude() const {
+        return sqrt(this->x * this->x + this->y * this->y);
+    };
+
+    virtual std::string toStr() const {
+        return std::to_string(this->x) + ", " + std::to_string(this->y);
+    };
+
+    operator std::string() const {
+        return toStr();
     };
 };
 
