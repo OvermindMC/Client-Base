@@ -4,6 +4,7 @@
 #include "Hooks/Subs/Level_Tick.h"
 #include "Hooks/Subs/Present_Tick.h"
 
+#include "Modules/Module/Movement/Parent.h"
 #include "Modules/Module/Other/Parent.h"
 
 Manager::Manager(Client* client_ptr) : ciPtr(client_ptr) {
@@ -12,6 +13,7 @@ Manager::Manager(Client* client_ptr) : ciPtr(client_ptr) {
         this->registerHook<PresentTick_Hook>();
     };
 
+    this->registerMod<Move, FastSneak>();
     this->registerMod<Other, TestMod>();
 
     this->isTickingState = true;
