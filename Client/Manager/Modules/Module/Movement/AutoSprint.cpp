@@ -7,7 +7,6 @@ AutoSprint::AutoSprint(Category* c) : Module(c) {
 
             if(player) {
                 if(player->isMoving()) {
-                    Debugger::log("!");
                     player->setSprinting(true);
                 };
             };
