@@ -3,8 +3,7 @@
 #include "Vec2.h"
 
 template <typename T, typename = typename std::enable_if<std::is_same<T, int>::value || std::is_same<T, float>::value || std::is_same<T, double>::value>::type>
-class Vec3 : public Vec2<T> {
-public:
+struct Vec3 : public Vec2<T> {
     T z;
 
     Vec3(T xOff = 0, T yOff = 0, T zOff = 0) : Vec2<T>(xOff, yOff), z(zOff) {};
@@ -42,16 +41,20 @@ public:
         return Vec3(this->x / other.x, this->y / other.y, z / other.z);
     };
 
-    float magnitude() const override {
-        return sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
+    float magnitude() const {
+        return std::sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
     };
 
     float magnitudeXZ() const {
-        return sqrt(this->x * this->x + this->z * this->z);
+        return std::sqrt(this->x * this->x + this->z * this->z);
     };
 
-    std::string toStr() const override {
+    std::string toStr() const {
         return std::to_string(this->x) + ", " + std::to_string(this->y) + ", " + std::to_string(this->z);
+    };
+
+    operator std::string() const {
+        return toStr();
     };
 };
 
