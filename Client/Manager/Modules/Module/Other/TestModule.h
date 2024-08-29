@@ -4,6 +4,6 @@
 
 class TestMod : public Module {
 public:
-    TestMod(Category* c);
+    TestMod(Category*);
     std::string getName() const override;
 };
