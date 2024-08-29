@@ -31,6 +31,10 @@ struct MovementSpeedComponent : public EntityComponent {
     float mSpeed;
 };
 
+struct ActorRotationComponent : public EntityComponent {
+    Vec2<float> mRot, mOldRot;
+};
+
 struct CollisionFlagComponent : public EntityComponent {};
 struct VerticalCollisionFlagComponent : public EntityComponent {};
 struct HorizontalCollisionFlagComponent : public EntityComponent {};
