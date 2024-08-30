@@ -5,4 +5,6 @@
 class ClientInstance {
 public:
     Player* getPlayer();
+
+    std::string& getTopScreenName();
 };
