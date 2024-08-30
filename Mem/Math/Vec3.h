@@ -49,6 +49,14 @@ struct Vec3 : public Vec2<T> {
         return std::sqrt(this->x * this->x + this->z * this->z);
     };
 
+    float dist(const Vec3& other) const {
+        float dX = other.x - this->x;
+        float dY = other.y - this->y;
+        float dZ = other.z - this->z;
+
+        return sqrt(dX * dX + dY * dY + dZ * dZ);
+    };
+
     std::string toStr() const {
         return std::to_string(this->x) + ", " + std::to_string(this->y) + ", " + std::to_string(this->z);
     };

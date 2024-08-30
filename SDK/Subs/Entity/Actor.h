@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Context/EntityContext.h"
+#include "GameMode/GameMode.h"
 
 class Actor {
 private:
