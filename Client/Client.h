@@ -10,6 +10,7 @@ public:
     ~Client();
 
     Manager* getMgr() const;
+    std::string getName() const;
 private:
     const char* name = nullptr;
     std::unique_ptr<Manager> mgrPtr;
