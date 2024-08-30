@@ -6,7 +6,7 @@
 class EventBase {
 public:
     enum class Type {
-        onTick = 1, onEnable = 2, onDisable = 3, onLerp = 4, onLevel = 5, onRender = 6, onKey = 7
+        onTick = 1, onEnable = 2, onDisable = 3, onLerp = 4, onLevel = 5, onRender = 6, onKey = 7, onMouse = 8
     };
 
     enum class Priority {
