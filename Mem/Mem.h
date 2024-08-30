@@ -13,6 +13,7 @@
 
 #define PI 3.14159265358979323846
 
+#include "Macro/Macros.hpp"
 #include "Math/AABB.h"
 #include "Math/Vec4.h"
 #include "EnTT/EnTT.h"
