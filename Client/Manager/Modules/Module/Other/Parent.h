@@ -3,6 +3,7 @@
 #include "../Module.h"
 
 #include "TestModule.h"
+#include "Uninject.h"
 
 class Other : public Category {
 public:

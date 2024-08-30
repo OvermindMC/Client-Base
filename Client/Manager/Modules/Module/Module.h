@@ -15,8 +15,12 @@ public:
     void baseTick();
 
     void setIsEnabled(bool);
+    void toggleIsEnabled();
     bool isEnabled() const;
     bool wasEnabled() const;
+
+    void setBind(uint64_t);
+    uint64_t getBind();
 
     template<EventBase::Type T>
     std::vector<EventBase*> getEvents() const {
@@ -29,6 +33,7 @@ public:
     };
 private:
     Category* cPtr = nullptr;
+    uint64_t modBindKey = NULL;
     std::unique_ptr<EventHandler> evH;
     std::pair<bool, bool> state = { 0, 0 };
 };

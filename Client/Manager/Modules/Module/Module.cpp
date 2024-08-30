@@ -30,10 +30,22 @@ void Module::setIsEnabled(bool state) {
     this->state.first = state;
 };
 
+void Module::toggleIsEnabled() {
+    this->state.first = !this->state.first;
+};
+
 bool Module::isEnabled() const {
     return this->state.first;
 };
 
 bool Module::wasEnabled() const {
     return this->state.second;
+};
+
+void Module::setBind(uint64_t bind) {
+    this->modBindKey = bind;
+};
+
+uint64_t Module::getBind() {
+    return this->modBindKey;
 };
