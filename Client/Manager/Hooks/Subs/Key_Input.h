@@ -14,7 +14,7 @@ public:
         if(mgr && mgr->isTicking()) {
             mgr->isUsingKey(key, isDown);
 
-            mgr->dispatchEvent<EventBase::Type::onLevel, uint64_t, bool, bool&>(key, isDown, cancel,
+            mgr->dispatchEvent<EventBase::Type::onKey, uint64_t, bool, bool&>(key, isDown, cancel,
                 [&](Module* m) {
                     return m->isEnabled();
                 }
