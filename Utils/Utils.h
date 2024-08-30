@@ -6,5 +6,6 @@
 
 class Utils {
 public:
-    //
+    static void reachOffset(float* offset, float target, float modifier);
+    static std::string sanitize(std::string&);
 };
