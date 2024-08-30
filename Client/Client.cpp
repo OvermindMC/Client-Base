@@ -13,3 +13,7 @@ Client::~Client() {
 Manager* Client::getMgr() const {
     return this->mgrPtr.get();
 };
+
+std::string Client::getName() const {
+    return this->name;
+};
