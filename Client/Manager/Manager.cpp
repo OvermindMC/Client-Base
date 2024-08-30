@@ -8,6 +8,7 @@
 
 #include "Modules/Module/Combat/Parent.h"
 #include "Modules/Module/Movement/Parent.h"
+#include "Modules/Module/Render/ClickGui.h"
 #include "Modules/Module/Other/Parent.h"
 
 Manager::Manager(Client* client_ptr) : ciPtr(client_ptr) {
@@ -24,6 +25,8 @@ Manager::Manager(Client* client_ptr) : ciPtr(client_ptr) {
     this->registerMod<Move, FastSneak>();
     this->registerMod<Move, Velocity>();
     this->registerMod<Move, NoSlow>();
+
+    this->registerMod<Render, ClickGui>();
     
     this->registerMod<Other, Uninject>();
     this->registerMod<Other, TestMod>();
