@@ -17,7 +17,7 @@ public:
                 
                 mgr->dispatchEvent<EventBase::Type::onRender>(
                     [&](Module* m) {
-                        return m->isEnabled();
+                        return m->isEnabled() || m->needsEvents();
                     }
                 );
                 
