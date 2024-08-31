@@ -33,14 +33,38 @@ public:
                 return this->elementText;
             };
 
-            Style getStyle() {
+            Style& getStyle() {
                 return this->elStyle;
+            };
+
+            bool isIntersected(char state = -1) {
+                if(state != -1) {
+                    this->intersected = state;
+                };
+                return this->intersected;
+            };
+
+            template<std::derived_from<Element> T>
+            bool isType() const {
+                return dynamic_cast<const T*>(this) != nullptr;
             };
         private:
             Window* parent = nullptr;
             std::string elementText;
+            bool intersected;
             Style elStyle;
-        };
+    };
+
+    class ModuleElement : public Element {
+        public:
+            ModuleElement(Window* window, Module* m) : Element(window, m->getName()), mod(m) {};
+
+            Module* getModule() const {
+                return this->mod;
+            };
+        private:
+            Module* mod = nullptr;
+    };
 
     Window(TitleData tData, float font_size, ImVec2 target_pos) : titleData(tData), fontSize(font_size), targetPos(target_pos) {
         //
@@ -159,10 +183,43 @@ public:
             &this->titleData.titleColor.Value.w,
             titleRect.x < point.x && titleRect.y < point.y && titleRect.z > point.x && titleRect.w > point.y ? 0.6 : 1.f, (io.DeltaTime * 1000.f) * 0.002f
         );
+
+        ImVec2 bodyPos = this->getSize();
+        ImVec2 titleSize = this->getTitleSize();
+        ImVec2 startPos = ImVec2(this->targetPos.x, titleSize.y);
+
+        float yOff = (startPos.y + this->padd.y);
+        for(const auto& el : this->elements) {
+            ImVec2 elSize = el->getSize();
+            auto& style = el->getStyle();
+
+            ImVec4 elRect = ImVec4(
+                startPos.x + 2.f, yOff,
+                titleSize.x - 2.f, yOff + elSize.y
+            );
+
+            el->isIntersected(elRect.x < point.x && elRect.y < point.y && elRect.z > point.x && elRect.w > point.y);
+            Utils::reachOffset(
+                &style.textColor.Value.w,
+                el->isIntersected() ? 0.7f : 1.f, (io.DeltaTime * 1000.f) * 0.002f
+            );
+
+            yOff += (elSize.y + this->padd.y);
+        };
     };
 
     void addElement(std::unique_ptr<Element> el) {
         this->elements.push_back(std::move(el));
+    };
+
+    std::vector<Element*> getElements() const {
+        std::vector<Element*> list;
+
+        for(const auto& el : this->elements) {
+            list.push_back(el.get());
+        };
+
+        return list;
     };
 private:
     TitleData titleData;
@@ -226,11 +283,13 @@ ClickGui::ClickGui(Category* c) : Module(c) {
 
                     for(const auto& mod : mods) {
                         window->addElement(
-                            std::make_unique<Window::Element>(
-                                window.get(), mod->getName()
+                            std::make_unique<Window::ModuleElement>(
+                                window.get(), mod
                             )
                         );
                     };
+
+                    window->setPad(ImVec2(20.f, 8.f));
 
                     currPos.x = (window->getSize().x + 2.f);
                     windows.push_back(std::move(window));
@@ -258,6 +317,26 @@ ClickGui::ClickGui(Category* c) : Module(c) {
             lastMousePos = ImVec2(
                 mousePos.x, mousePos.y
             );
+
+            auto& io = ImGui::GetIO();
+            bool doneAction = false;
+            for(const auto& window : windows) {
+                if(doneAction) break;
+                for(const auto& el : window->getElements()) {
+                    if(doneAction) break;
+                    if(el->isIntersected()) {
+                        if(isDown && action == 1) {
+                            if(el->isType<Window::ModuleElement>()) {
+                                auto mod = dynamic_cast<Window::ModuleElement*>(el)->getModule();
+
+                                if(mod)
+                                    mod->toggleIsEnabled();
+                            };
+                            doneAction = true;
+                        };
+                    };
+                };
+            };
         }
     );
 };
