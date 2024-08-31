@@ -267,12 +267,6 @@ ClickGui::ClickGui(Category* c) : Module(c) {
     static std::vector<std::unique_ptr<Window>> windows;
     static ImVec2 lastMousePos;
 
-    this->registerEvent<EventBase::Type::onDisable, EventBase::Priority::High>(
-        [&]() {
-            //
-        }
-    );
-
     this->registerEvent<EventBase::Type::onRender, EventBase::Priority::High>(
         [&]() {
             auto& io = ImGui::GetIO();
@@ -304,16 +298,19 @@ ClickGui::ClickGui(Category* c) : Module(c) {
 
             if(windows.empty()) {
                 auto categories = this->getMgr()->getCategories();
-                ImVec2 currPos = ImVec2(2.f, 10.f);
                 float fontSize = 16.f;
 
+                float totalWidth = 0.f;
+                std::vector<ImVec2> windowSizes;
+                ImVec2 padding = ImVec2(30.f, 12.f);
+                
                 for(const auto& category : categories) {
                     auto window = std::make_unique<Window>(
                         Window::TitleData(
                             category->getName(), ImColor(50.f, 50.f, 130.f)
                         ), Window::BodyStyle(
                             ImColor(30.f, 30.f, 30.f)
-                        ), fontSize, currPos
+                        ), fontSize, ImVec2(0.f, 0.f)
                     );
 
                     auto mods = category->getModules();
@@ -329,10 +326,21 @@ ClickGui::ClickGui(Category* c) : Module(c) {
                         );
                     };
 
-                    window->setPad(ImVec2(20.f, 8.f));
-                    currPos.x = (window->getTitleSize().x + 2.f);
-                    
+                    window->setPad(padding);
+                    ImVec2 size = window->getTitleSize();
+                    totalWidth += size.x;
+                    windowSizes.push_back(size);
                     windows.push_back(std::move(window));
+                };
+
+                totalWidth += (windows.size() - 1) * 1.f;
+
+                float startX = (display.x - totalWidth) / 2.f;
+                float currentX = startX;
+
+                for (size_t i = 0; i < windows.size(); ++i) {
+                    windows[i]->setPos(ImVec2(currentX, 10.f));
+                    currentX += windowSizes[i].x + 1.f;
                 };
             };
 
