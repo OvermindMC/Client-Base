@@ -7,6 +7,9 @@ class ClientInstance {
 public:
     Player* getPlayer();
 
+    void grabMouse();
+    void releaseMouse();
+
     GuiData* getGuiData();
     std::string& getTopScreenName();
 
