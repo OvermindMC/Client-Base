@@ -15,7 +15,7 @@ public:
             mgr->dispatchEvent<EventBase::Type::onLerp, Actor*, Vec3<float>*, bool&>(
                 entity, mMoveDelta, cancel,
                 [&](Module* m) {
-                    return m->isEnabled() == true;
+                    return m->isEnabled() || m->needsEvents();
                 }
             );
         };

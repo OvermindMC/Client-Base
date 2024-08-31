@@ -13,7 +13,7 @@ public:
         if(mgr && mgr->isTicking()) {
             mgr->dispatchEvent<EventBase::Type::onLevel>(
                 [&](Module* m) {
-                    return m->isEnabled();
+                    return m->isEnabled() || m->needsEvents();
                 }
             );
         };

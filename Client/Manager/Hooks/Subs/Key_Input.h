@@ -16,7 +16,7 @@ public:
 
             mgr->dispatchEvent<EventBase::Type::onKey, uint64_t, bool, bool&>(key, isDown, cancel,
                 [&](Module* m) {
-                    return m->isEnabled();
+                    return m->isEnabled() || m->needsEvents();
                 }
             );
 

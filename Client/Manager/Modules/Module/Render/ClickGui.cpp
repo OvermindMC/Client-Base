@@ -328,12 +328,18 @@ ClickGui::ClickGui(Category* c) : Module(c) {
 
     this->registerEvent<EventBase::Type::onKey, EventBase::Priority::High, uint64_t, bool, bool&>(
         [&](uint64_t key, bool isDown, bool& cancel) {
+            if(!this->isEnabled())
+                return;
+            
             cancel = true;
         }
     );
 
     this->registerEvent<EventBase::Type::onMouse, EventBase::Priority::High, char, bool, Vec2<int>, bool&>(
         [&](char action, bool isDown, Vec2<int> mousePos, bool& cancel) {
+            if(!this->isEnabled())
+                return;
+            
             cancel = true;
 
             lastMousePos = ImVec2(
