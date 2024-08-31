@@ -333,14 +333,14 @@ ClickGui::ClickGui(Category* c) : Module(c) {
                     windows.push_back(std::move(window));
                 };
 
-                totalWidth += (windows.size() - 1) * 1.f;
+                totalWidth += (windows.size() - 1) * 2.f;
 
                 float startX = (display.x - totalWidth) / 2.f;
                 float currentX = startX;
 
                 for (size_t i = 0; i < windows.size(); ++i) {
                     windows[i]->setPos(ImVec2(currentX, 10.f));
-                    currentX += windowSizes[i].x + 1.f;
+                    currentX += windowSizes[i].x + 2.f;
                 };
             };
 
