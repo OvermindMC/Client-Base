@@ -11,6 +11,12 @@ public:
         TitleData(std::string display_text, ImColor title_color) : text(display_text), titleColor(title_color) {};
     };
 
+    struct BodyStyle {
+        ImColor bgColor = ImColor(21.f, 21.f, 21.f);
+
+        BodyStyle(ImColor background_color) : bgColor(background_color) {};
+    };
+
     class Element {
         public:
             virtual ~Element() = default;
@@ -66,16 +72,24 @@ public:
             Module* mod = nullptr;
     };
 
-    Window(TitleData tData, float font_size, ImVec2 target_pos) : titleData(tData), fontSize(font_size), targetPos(target_pos) {
+    Window(TitleData tData, BodyStyle style, float font_size, ImVec2 target_pos) : titleData(tData), bodyStyle(style), fontSize(font_size), targetPos(target_pos) {
         //
     };
 
-    TitleData getTitle() const {
+    TitleData& getTitle() {
         return this->titleData;
+    };
+
+    BodyStyle& getStyle() {
+        return this->bodyStyle;
     };
 
     ImVec2 getPos() const {
         return this->targetPos;
+    };
+
+    void setPos(const ImVec2& pos) {
+        this->targetPos = pos;
     };
 
     float getFontSize() const {
@@ -120,6 +134,15 @@ public:
         return curr;
     };
 
+    ImVec4 getBodyRect() const {
+        ImVec2 titleSize = this->getTitleSize();
+        ImVec2 size = this->getSize();
+        return ImVec4(
+            this->targetPos.x, titleSize.y,
+            titleSize.x, size.y
+        );
+    };
+
     void renderTitle() {
         ImVec2 pos = this->getPos();
         ImVec2 size = this->getTitleSize();
@@ -147,11 +170,12 @@ public:
         ImVec2 titleSize = this->getTitleSize();
         ImVec2 startPos = ImVec2(this->targetPos.x, titleSize.y);
         
+        BodyStyle& style = this->getStyle();
         Renderer::FillRect(
             ImVec4(
                 startPos.x, startPos.y,
                 bodyPos.x, bodyPos.y
-            ), ImColor(21.f, 21.f, 21.f), 1.f
+            ), style.bgColor, 1.f
         );
 
         float yOff = (startPos.y + this->padd.y);
@@ -223,6 +247,7 @@ public:
     };
 private:
     TitleData titleData;
+    BodyStyle bodyStyle;
     ImVec2 targetPos;
     
     float fontSize;
@@ -233,32 +258,26 @@ private:
 
 ClickGui::ClickGui(Category* c) : Module(c) {
     this->setBind(VK_INSERT);
+    this->needsEvents(true);
 
     static std::vector<std::unique_ptr<Window>> windows;
     static ImVec2 lastMousePos;
-
-    this->registerEvent<EventBase::Type::onDisable, EventBase::Priority::High>(
-        [&]() {
-            if(this->blurProg.first > 0.f) {
-                this->blurProg.second = 0.f;
-                this->setIsEnabled(true);
-            } else {
-                this->blurProg.second = .2f;
-            };
-        }
-    );
 
     this->registerEvent<EventBase::Type::onRender, EventBase::Priority::High>(
         [&]() {
             auto& io = ImGui::GetIO();
             ImVec2 display = io.DisplaySize;
 
-            Utils::reachOffset(&blurProg.first, blurProg.second, (io.DeltaTime * 1000.f) * 0.002f);
+            blurProg.second = (this->isEnabled() ? 1.f : 0.f);
+            Utils::reachOffset(&blurProg.first, blurProg.second, (io.DeltaTime * 1000.f) * 0.004f);
+
+            if(this->blurProg.first <= 0.f)
+                return;
 
             OverFX::CreateBlur(
                 ImVec4(
                     0.f, 0.f, display.x, display.y
-                ), blurProg.first
+                ), blurProg.first / 10.f
             );
 
             if(blurProg.first <= 0.f) {
@@ -266,13 +285,16 @@ ClickGui::ClickGui(Category* c) : Module(c) {
             };
 
             if(windows.empty()) {
+                auto categories = this->getMgr()->getCategories();
                 ImVec2 currPos = ImVec2(2.f, 10.f);
                 float fontSize = 16.f;
 
-                for(const auto& category : this->getMgr()->getCategories()) {
+                for(const auto& category : categories) {
                     auto window = std::make_unique<Window>(
                         Window::TitleData(
-                            category->getName(), ImColor(50.f, 90.f, 110.f)
+                            category->getName(), ImColor(50.f, 50.f, 130.f)
+                        ), Window::BodyStyle(
+                            ImColor(30.f, 30.f, 30.f)
                         ), fontSize, currPos
                     );
 
@@ -290,8 +312,8 @@ ClickGui::ClickGui(Category* c) : Module(c) {
                     };
 
                     window->setPad(ImVec2(20.f, 8.f));
-
-                    currPos.x = (window->getSize().x + 2.f);
+                    currPos.x = (window->getTitleSize().x + 2.f);
+                    
                     windows.push_back(std::move(window));
                 };
             };
@@ -328,7 +350,6 @@ ClickGui::ClickGui(Category* c) : Module(c) {
                         if(isDown && action == 1) {
                             if(el->isType<Window::ModuleElement>()) {
                                 auto mod = dynamic_cast<Window::ModuleElement*>(el)->getModule();
-
                                 if(mod)
                                     mod->toggleIsEnabled();
                             };
