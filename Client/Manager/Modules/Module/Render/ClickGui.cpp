@@ -11,6 +11,37 @@ public:
         TitleData(std::string display_text, ImColor title_color) : text(display_text), titleColor(title_color) {};
     };
 
+    class Element {
+        public:
+            virtual ~Element() = default;
+
+            struct Style {
+                ImColor textColor = ImColor(255.f, 255.f, 255.f);
+            };
+
+            Element(Window* window, std::string display_text) : parent(window), elementText(display_text) {
+                //
+            };
+
+            ImVec2 getSize() const {
+                return Renderer::GetTextSize(
+                    this->elementText, this->parent->getFontSize()
+                );
+            };
+
+            std::string getText() const {
+                return this->elementText;
+            };
+
+            Style getStyle() {
+                return this->elStyle;
+            };
+        private:
+            Window* parent = nullptr;
+            std::string elementText;
+            Style elStyle;
+        };
+
     Window(TitleData tData, float font_size, ImVec2 target_pos) : titleData(tData), fontSize(font_size), targetPos(target_pos) {
         //
     };
@@ -27,11 +58,27 @@ public:
         return this->fontSize;
     };
 
+    ImVec2 getPad() const {
+        return this->padd;
+    };
+
+    void setPad(const ImVec2& pad) {
+        this->padd = pad;
+    };
+
     ImVec2 getTitleSize() const {
         ImVec2 curr = Renderer::GetTextSize(this->titleData.text, this->fontSize);
         curr = ImVec2(this->targetPos.x + curr.x, this->targetPos.y + curr.y);
 
-        curr.x += 8.f, curr.y += 6.f;
+        for(const auto& el : this->elements) {
+            ImVec2 elSize = el->getSize();
+
+            if(this->targetPos.x + elSize.x > curr.x) {
+                curr.x = (this->targetPos.x + elSize.x);
+            };
+        };
+
+        curr.x += this->padd.x, curr.y += this->padd.y;
 
         return curr;
     };
@@ -39,8 +86,13 @@ public:
     ImVec2 getSize() const {
         ImVec2 curr = this->getTitleSize();
 
-        //
+        for(const auto& el : this->elements) {
+            ImVec2 elSize = el->getSize();
 
+            curr.y += (elSize.y + this->padd.y);
+        };
+
+        curr.y += this->padd.y;
         return curr;
     };
 
@@ -67,10 +119,35 @@ public:
     };
 
     void renderBody() {
-        //
+        ImVec2 bodyPos = this->getSize();
+        ImVec2 titleSize = this->getTitleSize();
+        ImVec2 startPos = ImVec2(this->targetPos.x, titleSize.y);
+        
+        Renderer::FillRect(
+            ImVec4(
+                startPos.x, startPos.y,
+                bodyPos.x, bodyPos.y
+            ), ImColor(21.f, 21.f, 21.f), 1.f
+        );
+
+        float yOff = (startPos.y + this->padd.y);
+        for(const auto& el : this->elements) {
+            ImVec2 elSize = el->getSize();
+            auto style = el->getStyle();
+
+            Renderer::RenderText(
+                ImVec2(
+                    startPos.x + (((titleSize.x - startPos.x) / 2.f) - elSize.x / 2.f), yOff
+                ), el->getText(), this->fontSize, style.textColor
+            );
+
+            yOff += (elSize.y + this->padd.y);
+        };
     };
 
     void updateIntersects(ImVec2 point) {
+        auto& io = ImGui::GetIO();
+        
         ImVec2 pos = this->getPos();
         ImVec2 size = this->getTitleSize();
 
@@ -78,20 +155,30 @@ public:
             pos.x, pos.y, size.x, size.y
         );
         
-        this->titleData.titleColor.Value.w = (
-            titleRect.x < point.x && titleRect.y < point.y && titleRect.z > point.x && titleRect.w > point.y ? 0.3 : 1.f
+        Utils::reachOffset(
+            &this->titleData.titleColor.Value.w,
+            titleRect.x < point.x && titleRect.y < point.y && titleRect.z > point.x && titleRect.w > point.y ? 0.6 : 1.f, (io.DeltaTime * 1000.f) * 0.002f
         );
+    };
+
+    void addElement(std::unique_ptr<Element> el) {
+        this->elements.push_back(std::move(el));
     };
 private:
     TitleData titleData;
     ImVec2 targetPos;
+    
     float fontSize;
+    ImVec2 padd = ImVec2(8.f, 6.f);
+
+    std::vector<std::unique_ptr<Element>> elements;
 };
 
 ClickGui::ClickGui(Category* c) : Module(c) {
     this->setBind(VK_INSERT);
 
     static std::vector<std::unique_ptr<Window>> windows;
+    static ImVec2 lastMousePos;
 
     this->registerEvent<EventBase::Type::onDisable, EventBase::Priority::High>(
         [&]() {
@@ -123,19 +210,37 @@ ClickGui::ClickGui(Category* c) : Module(c) {
 
             if(windows.empty()) {
                 ImVec2 currPos = ImVec2(2.f, 10.f);
+                float fontSize = 16.f;
+
                 for(const auto& category : this->getMgr()->getCategories()) {
                     auto window = std::make_unique<Window>(
                         Window::TitleData(
                             category->getName(), ImColor(50.f, 90.f, 110.f)
-                        ), 19.f, currPos
+                        ), fontSize, currPos
                     );
-                    currPos.x = (window->getTitleSize().x + 2.f);
+
+                    auto mods = category->getModules();
+                    std::sort(mods.begin(), mods.end(), [&](Module* a, Module* b){
+                        return Renderer::GetTextSize(a->getName(), fontSize).x < Renderer::GetTextSize(b->getName(), fontSize).x;
+                    });
+
+                    for(const auto& mod : mods) {
+                        window->addElement(
+                            std::make_unique<Window::Element>(
+                                window.get(), mod->getName()
+                            )
+                        );
+                    };
+
+                    currPos.x = (window->getSize().x + 2.f);
                     windows.push_back(std::move(window));
                 };
             };
 
             for(const auto& window : windows) {
+                window->updateIntersects(lastMousePos);
                 window->renderTitle();
+                window->renderBody();
             };
         }
     );
@@ -150,19 +255,9 @@ ClickGui::ClickGui(Category* c) : Module(c) {
         [&](char action, bool isDown, Vec2<int> mousePos, bool& cancel) {
             cancel = true;
 
-            for(const auto& window : windows) {
-                window->updateIntersects(
-                    ImVec2(
-                        mousePos.x, mousePos.y
-                    )
-                );
-            };
-
-            /*for(const auto& el : elements) {
-                el->isIntersected = (
-                    el->rect.x < mousePos.x && el->rect.y < mousePos.y && el->rect.z > mousePos.x && el->rect.w > mousePos.y
-                );
-            };*/
+            lastMousePos = ImVec2(
+                mousePos.x, mousePos.y
+            );
         }
     );
 };
