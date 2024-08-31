@@ -31,9 +31,17 @@ public:
     void registerEvent(std::function<typename std::conditional<sizeof...(Args) == 0, void(), void(Args...)>::type >callback) {
         this->evH->registerEvent<T, P, Args...>(callback);
     };
+
+    bool needsEvents(char state = -1) {
+        if(state != -1) {
+            this->obtainAllEvents = state;
+        };
+        return this->obtainAllEvents;
+    };
 private:
     Category* cPtr = nullptr;
     uint64_t modBindKey = NULL;
+    bool obtainAllEvents = false;
     std::unique_ptr<EventHandler> evH;
     std::pair<bool, bool> state = { 0, 0 };
 };
