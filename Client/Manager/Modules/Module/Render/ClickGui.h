@@ -8,5 +8,5 @@ public:
 
     std::string getName() const override;
 
-    std::pair<float, float> blurProg = { 0.f, .2f };
+    std::pair<float, float> blurProg = { 0.f, 0.f };
 };
