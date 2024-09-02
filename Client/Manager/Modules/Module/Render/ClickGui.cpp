@@ -96,6 +96,10 @@ public:
         return this->fontSize;
     };
 
+    void setFontSize(float const& font_size) {
+        this->fontSize = font_size;
+    };
+
     ImVec2 getPad() const {
         return this->padd;
     };
@@ -116,7 +120,7 @@ public:
             };
         };
 
-        curr.x += this->padd.x, curr.y += this->padd.y;
+        curr.x += this->padd.x, curr.y += (this->padd.y / 2.f);
 
         return curr;
     };
@@ -330,16 +334,21 @@ ClickGui::ClickGui(Category* c) : Module(c) {
             );
 
             ClientInstance* ci = MC::getClientInstance();
+            GuiData* guidata = ci ? ci->getGuiData() : nullptr;
             
             ci->releaseMouse();
 
+            if(!guidata)
+                return;
+            
+            float fontSize = std::clamp(min(guidata->uiScale * 12, 20.0f), 0.0f, 30.0f);
+
             if(windows.empty()) {
                 auto categories = this->getMgr()->getCategories();
-                float fontSize = 16.f;
 
                 float totalWidth = 0.f;
                 std::vector<ImVec2> windowSizes;
-                ImVec2 padding = ImVec2(30.f, 12.f);
+                ImVec2 padding = ImVec2(30.f, 20.f);
                 
                 for(const auto& category : categories) {
                     auto window = std::make_unique<Window>(
@@ -382,6 +391,9 @@ ClickGui::ClickGui(Category* c) : Module(c) {
             };
 
             for(const auto& window : windows) {
+                if(window->getFontSize() != fontSize) {
+                    return windows.clear();
+                };
                 window->updateIntersects(lastMousePos, this->deltaMultiplier);
                 window->renderTitle();
                 window->renderBody(this->deltaMultiplier);
