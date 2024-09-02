@@ -180,7 +180,7 @@ public:
 
         Utils::reachOffset(
             &this->expandProg,
-            this->isExpanded ? 1.f : 0.f, 0.01f * deltaMultiplier
+            this->isExpanded() ? 1.f : 0.f, 0.01f * deltaMultiplier
         );
 
         Renderer::FillRect(
@@ -214,6 +214,8 @@ public:
         ImVec4 titleRect = ImVec4(
             pos.x, pos.y, size.x, size.y
         );
+
+        this->isIntersected(titleRect.x < point.x && titleRect.y < point.y && titleRect.z > point.x && titleRect.w > point.y);
         
         Utils::reachOffset(
             &this->titleData.titleColor.Value.w,
@@ -262,7 +264,19 @@ public:
         return list;
     };
 
-    bool isExpanded = true;
+    bool isExpanded(char state = -1) {
+        if(state != -1) {
+            this->isWindowExpanded = state;
+        };
+        return this->isWindowExpanded;
+    };
+
+    bool isIntersected(char state = -1) {
+        if(state != -1) {
+            this->isTitleIntersected = state;
+        };
+        return this->isTitleIntersected;
+    };
 private:
     TitleData titleData;
     BodyStyle bodyStyle;
@@ -270,6 +284,8 @@ private:
     
     float fontSize;
     float expandProg = 0.f;
+    bool isTitleIntersected;
+    bool isWindowExpanded = true;
     ImVec2 padd = ImVec2(8.f, 6.f);
 
     std::vector<std::unique_ptr<Element>> elements;
@@ -297,10 +313,6 @@ ClickGui::ClickGui(Category* c) : Module(c) {
 
             blurProg.second = (this->isEnabled() ? 1.f : 0.f);
             Utils::reachOffset(&blurProg.first, blurProg.second, 0.01f * this->deltaMultiplier);
-
-            for(const auto& window : windows) {
-                window->isExpanded = this->isEnabled();
-            };
 
             if(prevBlurV > 0.f && blurProg.first <= 0.f) {
                 this->revert();
@@ -401,6 +413,12 @@ ClickGui::ClickGui(Category* c) : Module(c) {
             bool doneAction = false;
             for(const auto& window : windows) {
                 if(doneAction) break;
+                if(window->isIntersected()) {
+                    if(isDown && action == 2) {
+                        window->isExpanded(!window->isExpanded());
+                    };
+                    doneAction = true;
+                };
                 for(const auto& el : window->getElements()) {
                     if(doneAction) break;
                     if(el->isIntersected()) {
