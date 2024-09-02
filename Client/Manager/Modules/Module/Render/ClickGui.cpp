@@ -316,7 +316,7 @@ ClickGui::ClickGui(Category* c) : Module(c) {
 
             static float prevBlurV = blurProg.first;
 
-            blurProg.second = (this->isEnabled() ? 1.f : 0.f);
+            blurProg.second = (this->isEnabled() ? 2.f : 0.f);
             Utils::reachOffset(&blurProg.first, blurProg.second, 0.01f * this->deltaMultiplier);
 
             if(prevBlurV > 0.f && blurProg.first <= 0.f) {
@@ -342,14 +342,14 @@ ClickGui::ClickGui(Category* c) : Module(c) {
             if(!guidata)
                 return;
             
-            float fontSize = std::clamp(min(guidata->uiScale * 12, 20.0f), 0.0f, 30.0f);
+            float fontSize = (guidata->uiScale <= 1 ? 12.f : guidata->uiScale * 8.f);
 
             if(windows.empty()) {
                 auto categories = this->getMgr()->getCategories();
 
                 float totalWidth = 0.f;
                 std::vector<ImVec2> windowSizes;
-                ImVec2 padding = ImVec2(30.f, fontSize);
+                ImVec2 padding = ImVec2(100.f, 6.f);
                 
                 for(const auto& category : categories) {
                     auto window = std::make_unique<Window>(
