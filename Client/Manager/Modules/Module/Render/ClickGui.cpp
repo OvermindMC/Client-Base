@@ -165,23 +165,36 @@ public:
         );
     };
 
-    void renderBody() {
+    void renderBody(float deltaMultiplier = 1.f) {
         ImVec2 bodyPos = this->getSize();
         ImVec2 titleSize = this->getTitleSize();
         ImVec2 startPos = ImVec2(this->targetPos.x, titleSize.y);
         
         BodyStyle& style = this->getStyle();
+
+        ImVec4 targetRect = ImVec4(
+            startPos.x,
+            startPos.y,
+            bodyPos.x, //startPos.x + (bodyPos.x - startPos.x) * this->expandProg,
+            startPos.y + (bodyPos.y - startPos.y) * this->expandProg
+        );
+
+        Utils::reachOffset(
+            &this->expandProg,
+            this->isExpanded ? 1.f : 0.f, 0.01f * deltaMultiplier
+        );
+
         Renderer::FillRect(
-            ImVec4(
-                startPos.x, startPos.y,
-                bodyPos.x, bodyPos.y
-            ), style.bgColor, 1.f
+            targetRect, style.bgColor, 1.f
         );
 
         float yOff = (startPos.y + this->padd.y);
         for(const auto& el : this->elements) {
             ImVec2 elSize = el->getSize();
             auto style = el->getStyle();
+
+            if((yOff + (elSize.y + this->padd.y)) > targetRect.w)
+                break;
 
             Renderer::RenderText(
                 ImVec2(
@@ -245,12 +258,15 @@ public:
 
         return list;
     };
+
+    bool isExpanded = true;
 private:
     TitleData titleData;
     BodyStyle bodyStyle;
     ImVec2 targetPos;
     
     float fontSize;
+    float expandProg = 0.f;
     ImVec2 padd = ImVec2(8.f, 6.f);
 
     std::vector<std::unique_ptr<Element>> elements;
@@ -278,6 +294,10 @@ ClickGui::ClickGui(Category* c) : Module(c) {
 
             blurProg.second = (this->isEnabled() ? 1.f : 0.f);
             Utils::reachOffset(&blurProg.first, blurProg.second, 0.01f * this->deltaMultiplier);
+
+            for(const auto& window : windows) {
+                window->isExpanded = this->isEnabled();
+            };
 
             if(prevBlurV > 0.f && blurProg.first <= 0.f) {
                 this->revert();
@@ -349,7 +369,7 @@ ClickGui::ClickGui(Category* c) : Module(c) {
             for(const auto& window : windows) {
                 window->updateIntersects(lastMousePos, this->deltaMultiplier);
                 window->renderTitle();
-                window->renderBody();
+                window->renderBody(this->deltaMultiplier);
             };
         }
     );
