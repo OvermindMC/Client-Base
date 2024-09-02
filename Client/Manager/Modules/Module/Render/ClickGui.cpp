@@ -175,8 +175,7 @@ public:
         ImVec4 targetRect = ImVec4(
             startPos.x,
             startPos.y,
-            bodyPos.x, //startPos.x + (bodyPos.x - startPos.x) * this->expandProg,
-            startPos.y + (bodyPos.y - startPos.y) * this->expandProg
+            bodyPos.x, startPos.y + (bodyPos.y - startPos.y) * this->expandProg
         );
 
         Utils::reachOffset(
@@ -193,7 +192,7 @@ public:
             ImVec2 elSize = el->getSize();
             auto style = el->getStyle();
 
-            if((yOff + (elSize.y + this->padd.y)) > targetRect.w)
+            if (yOff + elSize.y > targetRect.w)
                 break;
 
             Renderer::RenderText(
@@ -235,11 +234,15 @@ public:
                 titleSize.x - 2.f, yOff + elSize.y
             );
 
-            el->isIntersected(elRect.x < point.x && elRect.y < point.y && elRect.z > point.x && elRect.w > point.y);
-            Utils::reachOffset(
-                &style.textColor.Value.w,
-                el->isIntersected() ? 0.7f : 1.f, 0.01f * deltaMultiplier
-            );
+            if (yOff + elSize.y <= startPos.y + (bodyPos.y - startPos.y) * this->expandProg) {
+                el->isIntersected(elRect.x < point.x && elRect.y < point.y && elRect.z > point.x && elRect.w > point.y);
+                Utils::reachOffset(
+                    &style.textColor.Value.w,
+                    el->isIntersected() ? 0.7f : 1.f, 0.01f * deltaMultiplier
+                );
+            } else {
+                el->isIntersected(false);
+            };
 
             yOff += (elSize.y + this->padd.y);
         };
