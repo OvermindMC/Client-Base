@@ -10,6 +10,14 @@ struct Vec2 {
     Vec2(T xOff = 0, T yOff = 0) : x(xOff), y(yOff) {};
     Vec2(const Vec2& other) : x(other.x), y(other.y) {};
 
+    bool operator==(const Vec2& other) const {
+        return x == other.x && y == other.y;
+    };
+
+    bool operator!=(const Vec2& other) const {
+        return x != other.x || y != other.y;
+    };
+
     Vec2 operator+(T offset) const {
         return Vec2(x + offset, y + offset);
     };

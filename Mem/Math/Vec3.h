@@ -9,6 +9,14 @@ struct Vec3 : public Vec2<T> {
     Vec3(T xOff = 0, T yOff = 0, T zOff = 0) : Vec2<T>(xOff, yOff), z(zOff) {};
     Vec3(const Vec3& other) : Vec2<T>(other.x, other.y), z(other.z) {};
 
+    bool operator==(const Vec3& other) const {
+        return this->x == other.x && this->y == other.y && z == other.z;
+    };
+
+    bool operator!=(const Vec3& other) const {
+        return this->x != other.x || this->y != other.y || z != other.z;
+    };
+
     Vec3 operator+(T offset) const {
         return Vec3(this->x + offset, this->y + offset, z + offset);
     };
