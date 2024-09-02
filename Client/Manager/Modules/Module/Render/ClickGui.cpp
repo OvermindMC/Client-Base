@@ -155,7 +155,7 @@ public:
         Renderer::FillRect(
             ImVec4(
                 pos.x, pos.y, size.x, size.y
-            ), title.titleColor, 1.f
+            ), title.titleColor, this->rounding
         );
 
         ImVec2 titleSize = Renderer::GetTextSize(
@@ -178,7 +178,7 @@ public:
 
         ImVec4 targetRect = ImVec4(
             startPos.x,
-            startPos.y,
+            this->targetPos.y,
             bodyPos.x, startPos.y + (bodyPos.y - startPos.y) * this->expandProg
         );
 
@@ -188,7 +188,7 @@ public:
         );
 
         Renderer::FillRect(
-            targetRect, style.bgColor, 1.f
+            targetRect, style.bgColor, this->rounding
         );
 
         float yOff = (startPos.y + this->padd.y);
@@ -287,6 +287,7 @@ private:
     ImVec2 targetPos;
     
     float fontSize;
+    float rounding = 5.f;
     float expandProg = 0.f;
     bool isTitleIntersected;
     bool isWindowExpanded = true;
@@ -348,7 +349,7 @@ ClickGui::ClickGui(Category* c) : Module(c) {
 
                 float totalWidth = 0.f;
                 std::vector<ImVec2> windowSizes;
-                ImVec2 padding = ImVec2(30.f, 20.f);
+                ImVec2 padding = ImVec2(30.f, fontSize);
                 
                 for(const auto& category : categories) {
                     auto window = std::make_unique<Window>(
@@ -395,8 +396,8 @@ ClickGui::ClickGui(Category* c) : Module(c) {
                     return windows.clear();
                 };
                 window->updateIntersects(lastMousePos, this->deltaMultiplier);
-                window->renderTitle();
                 window->renderBody(this->deltaMultiplier);
+                window->renderTitle();
             };
         }
     );
