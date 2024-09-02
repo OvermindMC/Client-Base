@@ -193,7 +193,7 @@ public:
         };
     };
 
-    void updateIntersects(ImVec2 point) {
+    void updateIntersects(ImVec2 point, float deltaMultiplier = 1.f) {
         auto& io = ImGui::GetIO();
         
         ImVec2 pos = this->getPos();
@@ -205,7 +205,7 @@ public:
         
         Utils::reachOffset(
             &this->titleData.titleColor.Value.w,
-            titleRect.x < point.x && titleRect.y < point.y && titleRect.z > point.x && titleRect.w > point.y ? 0.6 : 1.f, (io.DeltaTime * 1000.f) * 0.002f
+            titleRect.x < point.x && titleRect.y < point.y && titleRect.z > point.x && titleRect.w > point.y ? 0.6 : 1.f, 0.01f * deltaMultiplier
         );
 
         ImVec2 bodyPos = this->getSize();
@@ -225,7 +225,7 @@ public:
             el->isIntersected(elRect.x < point.x && elRect.y < point.y && elRect.z > point.x && elRect.w > point.y);
             Utils::reachOffset(
                 &style.textColor.Value.w,
-                el->isIntersected() ? 0.7f : 1.f, (io.DeltaTime * 1000.f) * 0.002f
+                el->isIntersected() ? 0.7f : 1.f, 0.01f * deltaMultiplier
             );
 
             yOff += (elSize.y + this->padd.y);
@@ -270,12 +270,14 @@ ClickGui::ClickGui(Category* c) : Module(c) {
     this->registerEvent<EventBase::Type::onRender, EventBase::Priority::High>(
         [&]() {
             auto& io = ImGui::GetIO();
+            this->deltaMultiplier = io.Framerate / 60.f;
+
             ImVec2 display = io.DisplaySize;
 
             static float prevBlurV = blurProg.first;
 
             blurProg.second = (this->isEnabled() ? 1.f : 0.f);
-            Utils::reachOffset(&blurProg.first, blurProg.second, (io.DeltaTime * 1000.f) * 0.004f);
+            Utils::reachOffset(&blurProg.first, blurProg.second, 0.01f * this->deltaMultiplier);
 
             if(prevBlurV > 0.f && blurProg.first <= 0.f) {
                 this->revert();
@@ -345,7 +347,7 @@ ClickGui::ClickGui(Category* c) : Module(c) {
             };
 
             for(const auto& window : windows) {
-                window->updateIntersects(lastMousePos);
+                window->updateIntersects(lastMousePos, this->deltaMultiplier);
                 window->renderTitle();
                 window->renderBody();
             };
