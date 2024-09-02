@@ -411,11 +411,27 @@ ClickGui::ClickGui(Category* c) : Module(c) {
 
             auto& io = ImGui::GetIO();
             bool doneAction = false;
-            for(const auto& window : windows) {
+            for(auto iter = windows.rbegin(); iter != windows.rend(); ++iter) {
+                const auto& window = (*iter).get();
                 if(doneAction) break;
                 if(window->isIntersected()) {
-                    if(isDown && action == 2) {
-                        window->isExpanded(!window->isExpanded());
+                    if(isDown) {
+                        if(action == 1 && this->dragStart == Vec2<float>()) {
+                            this->dragStart = Vec2<float>(mousePos.x, mousePos.y);
+                        } else if(action == 2) {
+                            window->isExpanded(!window->isExpanded());
+                        };
+                    };
+                    if(this->dragStart != Vec2<float>()) {
+                        Vec2<float> pos = Vec2<float>(mousePos.x, mousePos.y);
+                        Vec2<float> dragOffset = pos - this->dragStart;
+
+                        ImVec2 newPos = window->getPos();
+                        newPos.x += dragOffset.x;
+                        newPos.y += dragOffset.y;
+                        window->setPos(newPos);
+                        
+                        this->dragStart = Vec2<float>(mousePos.x, mousePos.y);
                     };
                     doneAction = true;
                 };
@@ -431,6 +447,10 @@ ClickGui::ClickGui(Category* c) : Module(c) {
                             doneAction = true;
                         };
                     };
+                };
+
+                if(!isDown && action == 1) {
+                    this->dragStart = Vec2<float>();
                 };
             };
         }
