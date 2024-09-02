@@ -10,5 +10,6 @@ public:
     std::string getName() const override;
     void revert();
 
+    float deltaMultiplier;
     std::pair<float, float> blurProg = { 0.f, 0.f };
 };
