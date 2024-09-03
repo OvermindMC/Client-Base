@@ -14,6 +14,8 @@
 
 Manager::Manager(Client* client_ptr) : ciPtr(client_ptr) {
     if(MH_Initialize() == MH_OK) {
+        SwapChainStub::init();
+        
         this->registerHook<KeyInput_Hook>();
         this->registerHook<MouseInput_Hook>();
         this->registerHook<ActorLerp_Hook>();
@@ -49,6 +51,8 @@ Manager::~Manager() {
     this->hooks.clear();
     this->sigMap.clear();
     this->categories.clear();
+
+    SwapChainStub::free();
 
     Renderer::CleanUp(true);
     OverFX::CleanUp(true);
