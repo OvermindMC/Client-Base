@@ -3,4 +3,5 @@ target_sources(Client PRIVATE
     "FastSneak.cpp"
     "Velocity.cpp"
     "NoSlow.cpp"
+    "Step.cpp"
 )

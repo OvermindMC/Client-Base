@@ -29,6 +29,7 @@ Manager::Manager(Client* client_ptr) : ciPtr(client_ptr) {
     this->registerMod<Move, FastSneak>();
     this->registerMod<Move, Velocity>();
     this->registerMod<Move, NoSlow>();
+    this->registerMod<Move, Step>();
 
     this->registerMod<Render, ClickGui>();
     

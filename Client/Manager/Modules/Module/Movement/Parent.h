@@ -6,6 +6,7 @@
 #include "FastSneak.h"
 #include "Velocity.h"
 #include "NoSlow.h"
+#include "Step.h"
 
 class Move : public Category {
 public:
