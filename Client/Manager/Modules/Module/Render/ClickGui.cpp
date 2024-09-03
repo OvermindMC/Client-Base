@@ -69,9 +69,17 @@ public:
                 return this->mod;
             };
 
+            bool isExpanded(char state = -1) {
+                if(state != -1) {
+                    this->isElExpanded = state;
+                };
+                return this->isElExpanded;
+            };
+
             float animProg = 0.f;
         private:
             Module* mod = nullptr;
+            bool isElExpanded = false;
     };
 
     Window(TitleData tData, BodyStyle style, float font_size, ImVec2 target_pos) : titleData(tData), bodyStyle(style), fontSize(font_size), targetPos(target_pos) {
@@ -206,6 +214,8 @@ public:
             if (elRect.w > targetRect.w)
                 break;
             
+            std::string displayText = el->getText();
+            
             if(el->isType<Window::ModuleElement>()) {
                 auto casted = dynamic_cast<Window::ModuleElement*>(el.get());
                 auto mod = casted ? casted->getModule() : nullptr;
@@ -224,6 +234,15 @@ public:
                         );
                     };
                 };
+
+                std::string expText = casted->isExpanded() ? "-" : "+";
+                float expTxtLen = Renderer::GetTextSize(expText, this->fontSize).x;
+
+                Renderer::RenderText(
+                    ImVec2(
+                        targetRect.z - (expTxtLen * 2.f), yOff
+                    ), expText, this->fontSize, style.textColor
+                );
             };
 
             Renderer::RenderText(
@@ -478,14 +497,18 @@ ClickGui::ClickGui(Category* c) : Module(c) {
                 for(const auto& el : window->getElements()) {
                     if(doneAction) break;
                     if(el->isIntersected()) {
-                        if(isDown && action == 1) {
-                            if(el->isType<Window::ModuleElement>()) {
-                                auto mod = dynamic_cast<Window::ModuleElement*>(el)->getModule();
+                        if(el->isType<Window::ModuleElement>()) {
+                            auto casted = dynamic_cast<Window::ModuleElement*>(el);
+                            auto mod = casted ? casted->getModule() : nullptr;
+                            
+                            if(isDown && action == 1) {
                                 if(mod)
                                     mod->toggleIsEnabled();
+                            } else if(isDown && action == 2) {
+                                casted->isExpanded(!casted->isExpanded());
                             };
-                            doneAction = true;
                         };
+                        doneAction = true;
                     };
                 };
 
