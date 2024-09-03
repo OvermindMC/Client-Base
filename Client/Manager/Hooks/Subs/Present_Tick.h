@@ -6,7 +6,7 @@
 
 class PresentTick_Hook : public Hook<HRESULT*, IDXGISwapChain3*, UINT, UINT> {
 public:
-    PresentTick_Hook(Manager* mgr) : Hook<HRESULT*, IDXGISwapChain3*, UINT, UINT>(mgr, "Present_Tick", mgr->getSig<DXGIPresent_Sig, void*>(),
+    PresentTick_Hook(Manager* mgr) : Hook<HRESULT*, IDXGISwapChain3*, UINT, UINT>(mgr, "Present_Tick", (void*)SwapChainStub::get(8),
     [&](IDXGISwapChain3* SS, UINT SI, UINT F) -> HRESULT* {
         Manager* mgr = this->getMgr();
 
