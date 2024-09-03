@@ -4,21 +4,8 @@
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
 
-#include <dxgi.h>
-#include <d2d1.h>
-#include <d3d11.h>
-#include <d3d12.h>
-#include <d2d1_3.h>
-#include <d2d1_3.h>
-#include <dxgi1_6.h>
+#include "SwapChainStub/SwapChainStub.h"
 
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "d2d1.lib")
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "d3d12.lib")
-#pragma comment(lib, "dxguid.lib")
-
-#include <wrl/client.h>
 #include <string>
 
 class Renderer {
@@ -37,7 +24,7 @@ public:
     static void FillRectOutline(ImVec4, ImColor, float, float);
     static void FillRect(ImVec4, ImColor, float);
 private:
-    static bool fell, init, initImCtx, postFrame;
+    static bool fell, init, initImCtx;
 
     static IDXGISwapChain3* sc;
     static ID3D11Device* device;

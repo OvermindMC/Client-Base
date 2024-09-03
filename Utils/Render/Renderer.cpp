@@ -2,7 +2,7 @@
 #include "OverFX/OverFX.h"
 #include "../Debugger/Debugger.h"
 
-bool Renderer::fell = false, Renderer::init = false, Renderer::initImCtx = false, Renderer::postFrame = false;
+bool Renderer::fell = false, Renderer::init = false, Renderer::initImCtx = false;
 
 ImDrawList* Renderer::drawList = nullptr;
 IDXGISwapChain3* Renderer::sc = nullptr;
