@@ -207,8 +207,8 @@ public:
             auto style = el->getStyle();
 
             ImVec4 elRect = ImVec4(
-                startPos.x + 2.f, yOff,
-                titleSize.x - 2.f, yOff + elSize.y
+                startPos.x + 2.f, yOff - (this->padd.y / (2.f + (this->fontSize / 10.f))),
+                titleSize.x - 2.f, (yOff + elSize.y) + (this->padd.y  / (2.f + (this->fontSize / 10.f)))
             );
 
             if (elRect.w > targetRect.w)
@@ -388,14 +388,14 @@ ClickGui::ClickGui(Category* c) : Module(c) {
             if(!guidata)
                 return;
             
-            float fontSize = (guidata->uiScale <= 1 ? 12.f : guidata->uiScale * 8.f);
+            float fontSize = (guidata->uiScale <= 1 ? 16.f : guidata->uiScale * 9.f);
 
             if(windows.empty()) {
                 auto categories = this->getMgr()->getCategories();
 
                 float totalWidth = 0.f;
                 std::vector<ImVec2> windowSizes;
-                ImVec2 padding = ImVec2(100.f, 6.f);
+                ImVec2 padding = ImVec2(guidata->uiScale <= 1 ? 60.f : 200.f, 20.f);
                 
                 for(const auto& category : categories) {
                     auto window = std::make_unique<Window>(
