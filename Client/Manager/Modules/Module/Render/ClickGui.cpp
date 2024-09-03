@@ -68,6 +68,8 @@ public:
             Module* getModule() const {
                 return this->mod;
             };
+
+            float animProg = 0.f;
         private:
             Module* mod = nullptr;
     };
@@ -196,8 +198,33 @@ public:
             ImVec2 elSize = el->getSize();
             auto style = el->getStyle();
 
-            if (yOff + elSize.y > targetRect.w)
+            ImVec4 elRect = ImVec4(
+                startPos.x + 2.f, yOff,
+                titleSize.x - 2.f, yOff + elSize.y
+            );
+
+            if (elRect.w > targetRect.w)
                 break;
+            
+            if(el->isType<Window::ModuleElement>()) {
+                auto casted = dynamic_cast<Window::ModuleElement*>(el.get());
+                auto mod = casted ? casted->getModule() : nullptr;
+
+                if(mod) {
+                    Utils::reachOffset(&casted->animProg, mod->isEnabled() ? 1.f : 0.f, 0.01f * deltaMultiplier);
+
+                    if(casted->animProg > 0.f) {
+                        Renderer::FillRect(
+                            ImVec4(
+                                elRect.x + ((elRect.z - elRect.x) * (1.f - casted->animProg)) / 2.f, 
+                                elRect.y + ((elRect.w - elRect.y) * (1.f - casted->animProg)) / 2.f, 
+                                elRect.z - ((elRect.z - elRect.x) * (1.f - casted->animProg)) / 2.f, 
+                                elRect.w - ((elRect.w - elRect.y) * (1.f - casted->animProg)) / 2.f
+                            ), ImColor(50.f, 50.f, 50.f), this->rounding / 2.f
+                        );
+                    };
+                };
+            };
 
             Renderer::RenderText(
                 ImVec2(
