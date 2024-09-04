@@ -35,6 +35,11 @@ struct ActorRotationComponent : public EntityComponent {
     Vec2<float> mRot, mOldRot;
 };
 
+struct AABBShapeComponent : public EntityComponent {
+    AABB mAABB;
+    Vec2<float> mSize;
+};
+
 struct MaxAutoStepComponent : public EntityComponent {
     float stepHeight;
 

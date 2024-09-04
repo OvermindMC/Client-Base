@@ -24,6 +24,7 @@ Manager::Manager(Client* client_ptr) : ciPtr(client_ptr) {
     };
 
     this->registerMod<Combat, Killaura>();
+    this->registerMod<Combat, Hitbox>();
     
     this->registerMod<Move, AutoSprint>();
     this->registerMod<Move, FastSneak>();

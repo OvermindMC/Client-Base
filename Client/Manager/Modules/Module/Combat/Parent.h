@@ -3,6 +3,7 @@
 #include "../Module.h"
 
 #include "KillAura.h"
+#include "Hitbox.h"
 
 class Combat : public Category {
 public:
