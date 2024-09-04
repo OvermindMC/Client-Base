@@ -5,19 +5,21 @@ Flight::Flight(Category* c) : Module(c) {
         [&]() {
             Player* player = MC::getPlayer();
 
-            if(player; auto* ac = player->ctx.tryGetComponent<AbilitiesComponent>()) {
-                if(!this->canModify) {
-                    this->prevStates = {
-                        *ac->getAbility<bool>(AbilitiesIndex::MayFly),
-                        *ac->getAbility<bool>(AbilitiesIndex::Flying)
+            if(player) {
+                if(auto* ac = player->ctx.tryGetComponent<AbilitiesComponent>()) {
+                    if(!this->canModify) {
+                        this->prevStates = {
+                            *ac->getAbility<bool>(AbilitiesIndex::MayFly),
+                            *ac->getAbility<bool>(AbilitiesIndex::Flying)
+                        };
+                        this->canModify = true;
                     };
-                    this->canModify = true;
-                };
-                
-                if(this->canModify) {
-                    ac->setAbility(AbilitiesIndex::FlySpeed, this->flySpeed);
-                    ac->setAbility(AbilitiesIndex::Flying, true);
-                    ac->setAbility(AbilitiesIndex::MayFly, true);
+                    
+                    if(this->canModify) {
+                        ac->setAbility(AbilitiesIndex::FlySpeed, this->flySpeed);
+                        ac->setAbility(AbilitiesIndex::Flying, true);
+                        ac->setAbility(AbilitiesIndex::MayFly, true);
+                    };
                 };
             } else {
                 if(this->canModify)
@@ -46,8 +48,10 @@ std::string Flight::getName() const {
 void Flight::revert() {
     Player* player = MC::getPlayer();
 
-    if(!player || !this->canModify)
+    if(!player || !this->canModify) {
+        this->canModify = false;
         return;
+    };
 
     if(auto* ac = player->ctx.tryGetComponent<AbilitiesComponent>()) {
         ac->setAbility(AbilitiesIndex::FlySpeed, 0.05f);
