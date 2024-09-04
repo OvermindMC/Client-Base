@@ -179,7 +179,7 @@ public:
         );
     };
 
-    void renderBody(float deltaMultiplier = 1.f) {
+    void renderBody(float animDeltaSpeed) {
         ImVec2 bodyPos = this->getSize();
         ImVec2 titleSize = this->getTitleSize();
         ImVec2 startPos = ImVec2(this->targetPos.x, titleSize.y);
@@ -194,7 +194,7 @@ public:
 
         Utils::reachOffset(
             &this->expandProg,
-            this->isExpanded() ? 1.f : 0.f, 0.01f * deltaMultiplier
+            this->isExpanded() ? 1.f : 0.f, animDeltaSpeed / 2.f
         );
 
         Renderer::FillRect(
@@ -221,7 +221,7 @@ public:
                 auto mod = casted ? casted->getModule() : nullptr;
 
                 if(mod) {
-                    Utils::reachOffset(&casted->animProg, mod->isEnabled() ? 1.f : 0.f, 0.01f * deltaMultiplier);
+                    Utils::reachOffset(&casted->animProg, mod->isEnabled() ? 1.f : 0.f, animDeltaSpeed);
 
                     if(casted->animProg > 0.f) {
                         Renderer::FillRect(
@@ -255,7 +255,7 @@ public:
         };
     };
 
-    void updateIntersects(ImVec2 point, float deltaMultiplier = 1.f) {
+    void updateIntersects(ImVec2 point, float animDeltaSpeed) {
         auto& io = ImGui::GetIO();
         
         ImVec2 pos = this->getPos();
@@ -269,7 +269,7 @@ public:
         
         Utils::reachOffset(
             &this->titleData.titleColor.Value.w,
-            titleRect.x < point.x && titleRect.y < point.y && titleRect.z > point.x && titleRect.w > point.y ? 0.6 : 1.f, 0.01f * deltaMultiplier
+            titleRect.x < point.x && titleRect.y < point.y && titleRect.z > point.x && titleRect.w > point.y ? 0.6 : 1.f, animDeltaSpeed
         );
 
         ImVec2 bodyPos = this->getSize();
@@ -290,7 +290,7 @@ public:
                 el->isIntersected(elRect.x < point.x && elRect.y < point.y && elRect.z > point.x && elRect.w > point.y);
                 Utils::reachOffset(
                     &style.textColor.Value.w,
-                    el->isIntersected() ? 0.7f : 1.f, 0.01f * deltaMultiplier
+                    el->isIntersected() ? 0.6f : 1.f, animDeltaSpeed / 10.f
                 );
             } else {
                 el->isIntersected(false);
@@ -363,7 +363,7 @@ ClickGui::ClickGui(Category* c) : Module(c) {
             static float prevBlurV = blurProg.first;
 
             blurProg.second = (this->isEnabled() ? 2.f : 0.f);
-            Utils::reachOffset(&blurProg.first, blurProg.second, 0.01f * this->deltaMultiplier);
+            Utils::reachOffset(&blurProg.first, blurProg.second, this->animSpeed * this->deltaMultiplier);
 
             if(prevBlurV > 0.f && blurProg.first <= 0.f) {
                 this->revert();
@@ -441,8 +441,8 @@ ClickGui::ClickGui(Category* c) : Module(c) {
                 if(window->getFontSize() != fontSize) {
                     return windows.clear();
                 };
-                window->updateIntersects(lastMousePos, this->deltaMultiplier);
-                window->renderBody(this->deltaMultiplier);
+                window->updateIntersects(lastMousePos, this->animSpeed * this->deltaMultiplier);
+                window->renderBody(this->animSpeed * this->deltaMultiplier);
                 window->renderTitle();
             };
         }
