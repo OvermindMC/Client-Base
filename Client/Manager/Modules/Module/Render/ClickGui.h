@@ -11,6 +11,7 @@ public:
     void revert();
 
     float deltaMultiplier;
+    float animSpeed = 0.04f;
     std::pair<float, float> blurProg = { 0.f, 0.f };
 
     Vec2<float> dragStart;
