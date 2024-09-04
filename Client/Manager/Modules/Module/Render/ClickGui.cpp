@@ -395,7 +395,7 @@ ClickGui::ClickGui(Category* c) : Module(c) {
 
                 float totalWidth = 0.f;
                 std::vector<ImVec2> windowSizes;
-                ImVec2 padding = ImVec2(guidata->uiScale <= 1 ? 60.f : 200.f, 20.f);
+                ImVec2 padding = ImVec2(guidata->uiScale <= 1 ? 60.f : 150.f, 20.f);
                 
                 for(const auto& category : categories) {
                     auto window = std::make_unique<Window>(
