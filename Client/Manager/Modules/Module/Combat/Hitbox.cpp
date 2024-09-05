@@ -4,10 +4,11 @@ Hitbox::Hitbox(Category* c) : Module(c) {
     this->registerEvent<EventBase::Type::onLevel, EventBase::Priority::Medium>(
         [&]() {
             Player* player = MC::getPlayer();
-            uint64_t lRuntimeId = player->getRuntimeId();
 
             if(!player)
                 return;
+            
+            uint64_t lRuntimeId = player->getRuntimeId();
 
             MCUtils::forEach(
                 [&](Actor* entity, bool& shouldContinue) {
@@ -52,10 +53,11 @@ std::string Hitbox::getName() const {
 
 void Hitbox::revert() {
     Player* player = MC::getPlayer();
-    uint64_t lRuntimeId = player->getRuntimeId();
 
     if(!player)
         return;
+    
+    uint64_t lRuntimeId = player->getRuntimeId();
     
     MCUtils::forEach(
         [&](Actor* entity, bool& shouldContinue) {
