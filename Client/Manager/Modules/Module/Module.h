@@ -2,7 +2,7 @@
 
 #include "../Category.h"
 
-struct ModuleEvent { bool isEnabled; }; struct ModuleTickEvent : ModuleEvent {};
+struct ModuleEvent { bool isEnabled; }; struct ModuleTickEvent : public ModuleEvent {};
 
 class Module {
 public:
