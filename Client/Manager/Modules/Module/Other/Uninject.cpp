@@ -3,9 +3,11 @@
 Uninject::Uninject(Category* c) : Module(c) {
     this->setBind('U');
 
-    this->registerEvent<EventBase::Type::onEnable, EventBase::Priority::High>(
-        [&]() {
-            this->getMgr()->stop();
+    this->registerEvent<ModuleEvent, EventPriority::High>(
+        [&](const ModuleEvent& ev) {
+            if(ev.isEnabled) {
+                this->getMgr()->stop();
+            };
         }
     );
 };

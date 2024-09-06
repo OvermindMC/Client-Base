@@ -13,16 +13,11 @@ Manager* Module::getMgr() const {
 void Module::baseTick() {
     if(this->state.first != this->state.second) {
         this->state.second = this->state.first;
-
-        if(this->state.first) {
-            this->evH->dispatchEvent<EventBase::Type::onEnable>();
-        } else {
-            this->evH->dispatchEvent<EventBase::Type::onDisable>();
-        };
+        this->evH->dispatchEvent<ModuleEvent>({ this->state.first });
     };
 
     if(this->state.first) {
-        this->evH->dispatchEvent<EventBase::Type::onTick>();
+        this->evH->dispatchEvent<ModuleTickEvent>({ this->state.first });
     };
 };
 

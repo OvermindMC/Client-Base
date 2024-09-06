@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <MinHook.h>
 #include <Windows.h>
+#include <typeindex>
 #include <assert.h>
 #include <vector>
 #include <memory>

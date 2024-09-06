@@ -1,41 +1,31 @@
 #pragma once
 
-#include "../../../Mem/Mem.h"
-#include "../../../Utils/Utils.h"
+#include "Subs/LerpEvent.h"
+#include "Subs/LevelEvent.h"
+#include "Subs/RenderEvent.h"
+#include "Subs/KeyInputEvent.h"
+#include "Subs/MouseInputEvent.h"
 
 class EventBase {
 public:
-    enum class Type {
-        onTick = 1, onEnable = 2, onDisable = 3, onLerp = 4, onLevel = 5, onRender = 6, onKey = 7, onMouse = 8
-    };
-
-    enum class Priority {
-        Low = 1, Medium = 2, High = 3
-    };
-
     virtual ~EventBase() = default;
-
-    virtual Type getType() const = 0;
-    virtual Priority getPriority() const = 0;
+    virtual const std::type_info& getType() const = 0;
 };
 
-template<EventBase::Type T, EventBase::Priority P, typename... Args>
+template<typename T>
 class Event : public EventBase {
 public:
-    Event(std::function<void(Args...)> event_callback) : callback(event_callback) {};
+    using CallbackType = std::function<void(const T&)>;
 
-    EventBase::Type getType() const override {
-        return T;
-    };
-    EventBase::Priority getPriority() const override {
-        return P;
+    Event(CallbackType event_callback) : callback_(event_callback) {}
+
+    const std::type_info& getType() const override {
+        return typeid(T);
     };
 
-    void call(Args... args) {
-        if(this->callback) {
-            this->callback(args...);
-        };
+    void call(const T& event) {
+        callback_(event);
     };
 private:
-    std::function<void(Args...)> callback;
+    CallbackType callback_;
 };

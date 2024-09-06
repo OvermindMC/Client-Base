@@ -1,19 +1,13 @@
 #include "FastSneak.h"
 
 FastSneak::FastSneak(Category* c) : Module(c) {
-    this->registerEvent<EventBase::Type::onLevel, EventBase::Priority::Low>(
-        [&]() {
-            Player* player = MC::getPlayer();
-
-            if(!player)
-                return;
-            
-            auto& ctx = player->ctx;
-            auto& registry = ctx.enttRegistry;
-
-            if(auto* sc = registry.try_get<SneakingComponent>(ctx.entity)) {
-                if(auto* msc = registry.try_get<MovementSpeedComponent>(ctx.entity)) {
-                    sc->mSneakSpeed = msc->mSpeed * 10.f;
+    this->registerEvent<LevelEvent, EventPriority::Low>(
+        [&](const LevelEvent& ev) {
+            if(ev.mPlayer) {
+                if(auto* sc = ev.mPlayer->ctx.tryGetComponent<SneakingComponent>()) {
+                    if(auto* msc = ev.mPlayer->ctx.tryGetComponent<MovementSpeedComponent>()) {
+                        sc->mSneakSpeed = msc->mSpeed * 10.f;
+                    };
                 };
             };
         }

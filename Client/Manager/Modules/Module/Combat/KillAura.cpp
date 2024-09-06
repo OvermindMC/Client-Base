@@ -3,9 +3,12 @@
 Killaura::Killaura(Category* c) : Module(c) {
     this->setBind('R');
 
-    this->registerEvent<EventBase::Type::onLevel, EventBase::Priority::High>(
-        [&]() {
-            Player* player = MC::getPlayer();
+    this->registerEvent<LevelEvent, EventPriority::High>(
+        [&](const LevelEvent& ev) {
+            if(!ev.mPlayer)
+                return;
+            
+            Player* player = ev.mPlayer;
             Vec3 myPos = player->getPosition();
             GameMode* GM = player->getGameMode();
             uint64_t lRuntimeId = player->getRuntimeId();

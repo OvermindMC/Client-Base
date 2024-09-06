@@ -1,18 +1,19 @@
 #include "NoSlow.h"
 
 NoSlow::NoSlow(Category* c) : Module(c) {
-    this->registerEvent<EventBase::Type::onLevel, EventBase::Priority::Medium>(
-        [&]() {
-            Player* player = MC::getPlayer();
-
-            if(player)
-                player->ctx.removeComponent<ItemInUseComponent, BlockMovementSlowdownMultiplierComponent>();
+    this->registerEvent<LevelEvent, EventPriority::Medium>(
+        [&](const LevelEvent& ev) {
+            if(ev.mPlayer) {
+                ev.mPlayer->ctx.removeComponent<ItemInUseComponent, BlockMovementSlowdownMultiplierComponent>();
+            };
         }
     );
 
-    this->registerEvent<EventBase::Type::onDisable, EventBase::Priority::Low>(
-        [&]() {
-            this->revertPatches();
+    this->registerEvent<ModuleEvent, EventPriority::Low>(
+        [&](const ModuleEvent& ev) {
+            if(!ev.isEnabled) {
+                this->revertPatches();
+            };
         }
     );
 };

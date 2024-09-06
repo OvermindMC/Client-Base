@@ -1,12 +1,10 @@
 #include "Flight.h"
 
 Flight::Flight(Category* c) : Module(c) {
-    this->registerEvent<EventBase::Type::onRender, EventBase::Priority::Medium>(
-        [&]() {
-            Player* player = MC::getPlayer();
-
-            if(player) {
-                if(auto* ac = player->ctx.tryGetComponent<AbilitiesComponent>()) {
+    this->registerEvent<LevelEvent, EventPriority::Medium>(
+        [&](const LevelEvent& ev) {
+            if(ev.mPlayer) {
+                if(auto* ac = ev.mPlayer->ctx.tryGetComponent<AbilitiesComponent>()) {
                     if(!this->canModify) {
                         this->prevStates = {
                             *ac->getAbility<bool>(AbilitiesIndex::MayFly),
@@ -30,9 +28,11 @@ Flight::Flight(Category* c) : Module(c) {
         }
     );
 
-    this->registerEvent<EventBase::Type::onDisable, EventBase::Priority::Low>(
-        [&]() {
-            this->revert();
+    this->registerEvent<ModuleEvent, EventPriority::Low>(
+        [&](const ModuleEvent& ev) {
+            if(!ev.isEnabled) {
+                this->revert();
+            };
         }
     );
 };

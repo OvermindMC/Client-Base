@@ -353,10 +353,10 @@ ClickGui::ClickGui(Category* c) : Module(c) {
     static std::vector<std::unique_ptr<Window>> windows;
     static ImVec2 lastMousePos;
 
-    this->registerEvent<EventBase::Type::onRender, EventBase::Priority::High>(
-        [&]() {
-            auto& io = ImGui::GetIO();
-            this->deltaMultiplier = io.Framerate / 60.f;
+    this->registerEvent<RenderEvent, EventPriority::High>(
+        [&](const RenderEvent& ev) {
+            auto& io = ev.io;
+            this->deltaMultiplier = ev.fps;
 
             ImVec2 display = io.DisplaySize;
 
@@ -448,41 +448,43 @@ ClickGui::ClickGui(Category* c) : Module(c) {
         }
     );
 
-    this->registerEvent<EventBase::Type::onKey, EventBase::Priority::High, uint64_t, bool, bool&>(
-        [&](uint64_t key, bool isDown, bool& cancel) {
+    this->registerEvent<KeyInputEvent, EventPriority::High>(
+        [&](const KeyInputEvent& ev) {
             if(!this->isEnabled())
                 return;
             
-            cancel = true;
+            ev.cancel = true;
         }
     );
 
-    this->registerEvent<EventBase::Type::onMouse, EventBase::Priority::High, char, bool, Vec2<int>, bool&>(
-        [&](char action, bool isDown, Vec2<int> mousePos, bool& cancel) {
+    this->registerEvent<MouseInputEvent, EventPriority::High>(
+        [&](const MouseInputEvent& ev) {
             if(!this->isEnabled())
                 return;
             
-            cancel = true;
+            ev.cancel = true;
 
             lastMousePos = ImVec2(
-                mousePos.x, mousePos.y
+                ev.mMousePos.x, ev.mMousePos.y
             );
 
             auto& io = ImGui::GetIO();
             bool doneAction = false;
+            Vec2 mousePosF = Vec2<float>(ev.mMousePos.x, ev.mMousePos.y);
+
             for(auto iter = windows.rbegin(); iter != windows.rend(); ++iter) {
                 const auto& window = (*iter).get();
                 if(doneAction) break;
                 if(window->isIntersected()) {
-                    if(isDown) {
-                        if(action == 1 && this->dragStart == Vec2<float>()) {
-                            this->dragStart = Vec2<float>(mousePos.x, mousePos.y);
-                        } else if(action == 2) {
+                    if(ev.mIsDown) {
+                        if(ev.mAction == MouseAction::LMOUSE && this->dragStart == Vec2<float>()) {
+                            this->dragStart = mousePosF;
+                        } else if(ev.mAction == MouseAction::RMOUSE) {
                             window->isExpanded(!window->isExpanded());
                         };
                     };
                     if(this->dragStart != Vec2<float>()) {
-                        Vec2<float> pos = Vec2<float>(mousePos.x, mousePos.y);
+                        Vec2<float> pos = mousePosF;
                         Vec2<float> dragOffset = pos - this->dragStart;
 
                         ImVec2 newPos = window->getPos();
@@ -490,7 +492,7 @@ ClickGui::ClickGui(Category* c) : Module(c) {
                         newPos.y += dragOffset.y;
                         window->setPos(newPos);
                         
-                        this->dragStart = Vec2<float>(mousePos.x, mousePos.y);
+                        this->dragStart = mousePosF;
                     };
                     doneAction = true;
                 };
@@ -501,10 +503,10 @@ ClickGui::ClickGui(Category* c) : Module(c) {
                             auto casted = dynamic_cast<Window::ModuleElement*>(el);
                             auto mod = casted ? casted->getModule() : nullptr;
                             
-                            if(isDown && action == 1) {
+                            if(ev.mIsDown && ev.mAction == MouseAction::LMOUSE) {
                                 if(mod)
                                     mod->toggleIsEnabled();
-                            } else if(isDown && action == 2) {
+                            } else if(ev.mIsDown && ev.mAction == MouseAction::RMOUSE) {
                                 casted->isExpanded(!casted->isExpanded());
                             };
                         };
@@ -512,7 +514,7 @@ ClickGui::ClickGui(Category* c) : Module(c) {
                     };
                 };
 
-                if(!isDown && action == 1) {
+                if(!ev.mIsDown && ev.mAction == MouseAction::LMOUSE) {
                     this->dragStart = Vec2<float>();
                 };
             };

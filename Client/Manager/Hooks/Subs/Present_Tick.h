@@ -13,9 +13,11 @@ public:
             bool cleanAll = !Renderer::Init(SS);
             if(!cleanAll) {
                 Renderer::NewFrame();
-                
-                mgr->dispatchEvent<EventBase::Type::onRender>(
-                    [&](Module* m) {
+
+                auto& io = ImGui::GetIO();
+                mgr->dispatchEvent<RenderEvent>({
+                    io, io.Framerate / 60.f
+                }, [&](Module* m) {
                         return m->isEnabled() || m->needsEvents();
                     }
                 );

@@ -12,9 +12,10 @@ public:
         bool cancel = false;
 
         if(mgr && mgr->isTicking()) {
-            mgr->dispatchEvent<EventBase::Type::onLerp, Actor*, Vec3<float>*, bool&>(
-                entity, mMoveDelta, cancel,
-                [&](Module* m) {
+            mgr->dispatchEvent<ActorLerpEvent>(
+                {
+                    cancel, entity, *mMoveDelta
+                }, [&](Module* m) {
                     return m->isEnabled() || m->needsEvents();
                 }
             );

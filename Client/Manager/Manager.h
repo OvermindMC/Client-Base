@@ -33,14 +33,14 @@ public:
     template<class C, class M>
     void registerMod();
 
-    template<EventBase::Type T, typename... Args>
-    void dispatchEvent(Args... args, std::function<bool(Module*)> filter = nullptr) {
-        std::vector<EventBase*> list;
+    template<typename T>
+    void dispatchEvent(const T& event, std::function<bool(Module*)> filter = nullptr) {
+        std::vector<std::pair<EventPriority, Event<T>*>> sorted_events;
 
-        for(const auto& [ type, category ] : this->categories) {
+        for (const auto& [type, category] : this->categories) {
             auto modules = category->getModules();
 
-            if(filter) {
+            if (filter) {
                 modules.erase(
                     std::remove_if(
                         modules.begin(), modules.end(), [&](Module* m) {
@@ -50,26 +50,23 @@ public:
                 );
             };
 
-            for(const auto mod : modules) {
-                for(const auto ev : mod->getEvents<T>()) {
-                    list.push_back(ev);
+            for (const auto mod : modules) {
+                auto [eventList, priorityList] = mod->getEvents<T>();
+                for (size_t i = 0; i < eventList.size(); ++i) {
+                    sorted_events.emplace_back(priorityList[i], eventList[i]);
                 };
             };
         };
 
-        std::sort(list.begin(), list.end(), [](EventBase* a, EventBase* b) {
-            return a->getPriority() > b->getPriority();
+        std::sort(sorted_events.begin(), sorted_events.end(), [](const auto& a, const auto& b) {
+            return a.first > b.first;
         });
 
-        for (auto& event : list) {
-            if (auto specificEvent = dynamic_cast<Event<T, EventBase::Priority::Low, Args...>*>(event)) {
-                specificEvent->call(std::forward<Args>(args)...);
-            }
-            else if (auto specificEvent = dynamic_cast<Event<T, EventBase::Priority::Medium, Args...>*>(event)) {
-                specificEvent->call(std::forward<Args>(args)...);
-            }
-            else if (auto specificEvent = dynamic_cast<Event<T, EventBase::Priority::High, Args...>*>(event)) {
-                specificEvent->call(std::forward<Args>(args)...);
+        for (const auto& [priority, eventPtr] : sorted_events) {
+            if (auto specificEvent = dynamic_cast<Event<T>*>(eventPtr)) {
+                specificEvent->call(event);
+            } else {
+                //
             };
         };
     };

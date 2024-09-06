@@ -1,9 +1,9 @@
 #include "Hitbox.h"
 
 Hitbox::Hitbox(Category* c) : Module(c) {
-    this->registerEvent<EventBase::Type::onLevel, EventBase::Priority::Medium>(
-        [&]() {
-            Player* player = MC::getPlayer();
+    this->registerEvent<LevelEvent, EventPriority::Medium>(
+        [&](const LevelEvent& ev) {
+            Player* player = ev.mPlayer;
 
             if(!player)
                 return;
@@ -36,9 +36,11 @@ Hitbox::Hitbox(Category* c) : Module(c) {
         }
     );
 
-    this->registerEvent<EventBase::Type::onDisable, EventBase::Priority::Medium>(
-        [&]() {
-            this->revert();
+    this->registerEvent<ModuleEvent, EventPriority::Medium>(
+        [&](const ModuleEvent& ev) {
+            if(!ev.isEnabled) {
+                this->revert();
+            };
         }
     );
 };

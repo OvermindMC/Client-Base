@@ -9,10 +9,13 @@ public:
     LevelTick_Hook(Manager* mgr) : Hook<void, void*>(mgr, "Level_Tick", mgr->getSig<Level_Sig, void**>()[99],
     [&](void* level) -> void {
         Manager* mgr = this->getMgr();
+        Player* player = MC::getPlayer();
 
         if(mgr && mgr->isTicking()) {
-            mgr->dispatchEvent<EventBase::Type::onLevel>(
-                [&](Module* m) {
+            mgr->dispatchEvent<LevelEvent>(
+                {
+                    player
+                }, [&](Module* m) {
                     return m->isEnabled() || m->needsEvents();
                 }
             );

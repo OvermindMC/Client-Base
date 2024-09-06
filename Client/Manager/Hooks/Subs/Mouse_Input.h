@@ -12,8 +12,10 @@ public:
         bool cancel = false;
 
         if(mgr && mgr->isTicking()) {
-            mgr->dispatchEvent<EventBase::Type::onMouse, char, bool, Vec2<int>, bool&>(action, isDown, Vec2<int>(mouseX, mouseY), cancel,
-                [&](Module* m) {
+            mgr->dispatchEvent<MouseInputEvent>(
+                {
+                    cancel, static_cast<MouseAction>(action), isDown, Vec2<int>(mouseX, mouseY)
+                }, [&](Module* m) {
                     return m->isEnabled() || m->needsEvents();
                 }
             );
