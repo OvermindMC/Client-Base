@@ -16,7 +16,12 @@ public:
 
     static inline std::function<T(Args...)> callback = [&](Args... args) -> T { return T{}; };
     static T detourCallback(Args... args) {
-        return callback ? callback(args...) : T{};
+        if constexpr (std::is_void_v<T>) {
+            callback(args...);
+            return;
+        } else {
+            return callback ? callback(args...) : T{};
+        };
     };
 
     Hook(Manager* mgr, std::string name, void* targetFunc, std::function<T(Args...)> hook_callback) : mgrPtr(mgr), hookName(name), tAddr(targetFunc) {
