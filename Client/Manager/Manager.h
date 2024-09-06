@@ -35,6 +35,9 @@ public:
 
     template<typename T>
     void dispatchEvent(const T& event, std::function<bool(Module*)> filter = nullptr) {
+        if(!this->isTickingState)
+            return;
+        
         std::vector<std::pair<EventPriority, Event<T>*>> sorted_events;
 
         for (const auto& [type, category] : this->categories) {
