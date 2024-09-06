@@ -5,6 +5,7 @@
 #include "AutoSprint.h"
 #include "FastSneak.h"
 #include "Velocity.h"
+#include "AirJump.h"
 #include "Flight.h"
 #include "NoSlow.h"
 #include "Step.h"
