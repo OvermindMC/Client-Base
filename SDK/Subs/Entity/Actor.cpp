@@ -8,13 +8,10 @@ uint64_t Actor::getRuntimeId() {
 };
 
 uint8_t Actor::getEntityTypeId() {
-    static void* sig = Mem::getRef("E8 ? ? ? ? 83 F8 5F"); // 48 83 EC 38 8B 41 18 48 8D 54 24 20 48 8B 49 10 89 44 24 20 E8 17 8B 01 00 48
-    using Func = uint8_t (__thiscall*)(const Actor*);
-    Func func = (Func)sig;
-
-    auto tic = this->ctx.tryGetComponent<ActorTypeComponent>();
-    
-    return func ? func(this) : (tic ? tic->mTypeId : 0);
+    if(auto* atc = this->ctx.tryGetComponent<ActorTypeComponent>()) {
+        return atc->getType();
+    };
+    return 0;
 };
 
 bool Actor::isAlive() {
