@@ -14,7 +14,11 @@ struct RuntimeIDComponent : public EntityComponent {
 };
 
 struct ActorTypeComponent : public EntityComponent {
-    uint8_t mTypeId;
+    uint32_t mTypeId;
+
+    uint8_t getType() const {
+        return static_cast<uint8_t>(this->mTypeId);
+    };
 };
 
 struct StateVectorComponent : public EntityComponent {
