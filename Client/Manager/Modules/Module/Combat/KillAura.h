@@ -9,4 +9,5 @@ public:
     std::string getName() const override;
 
     float range = 12.f;
+    float ticksDelay = 0.5f;
 };
