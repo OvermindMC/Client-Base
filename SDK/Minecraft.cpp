@@ -23,8 +23,13 @@ std::vector<Actor*> MC::getEntities() {
         auto& registry = ctx.enttRegistry;
 
         for (auto ent : registry.view<ActorOwnerComponent>()) {
-            if (auto* aoc = registry.try_get<ActorOwnerComponent>(ent)) {
-                results.push_back(aoc->mActor);
+            if(!registry.valid(ent))
+                continue;
+            
+            if (auto aoc = &registry.get<ActorOwnerComponent>(ent)) {
+                if(aoc->mActor) {
+                    results.push_back(aoc->mActor);
+                };
             };
         };
     };
