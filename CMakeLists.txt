@@ -36,10 +36,13 @@ FetchContent_MakeAvailable(libhat)
 add_library(Client SHARED)                                      # Set as DLL
 target_sources(Client PRIVATE main.cpp)                         # DLL entry point
 
-target_link_libraries(Client PRIVATE minhook EnTT::EnTT libhat) # Target link libraries; MinHook, EnTT, libhat
-
 # External sub folders
 add_subdirectory(Client)
 add_subdirectory(Utils)
 add_subdirectory(Mem)
 add_subdirectory(SDK)
+
+add_compile_definitions(ENTT_SPARSE_PAGE=2048)
+add_compile_definitions(ENTT_PACKED_PAGE=128)
+
+target_link_libraries(Client PRIVATE minhook EnTT::EnTT libhat) # Target link libraries; MinHook, EnTT, libhat
