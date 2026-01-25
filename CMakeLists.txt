@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(Client VERSION 1.0 LANGUAGES C CXX)
+project(Client VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -9,7 +9,13 @@ set_property(GLOBAL PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
 
 include(FetchContent)
 
-# MinHook
+FetchContent_Declare(
+    libhat
+    GIT_REPOSITORY https://github.com/BasedInc/libhat.git
+    GIT_TAG        v0.9.0
+)
+FetchContent_MakeAvailable(libhat)
+
 FetchContent_Declare(
     minhook
     GIT_REPOSITORY https://github.com/TsudaKageyu/minhook.git
@@ -17,32 +23,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(minhook)
 
-#EnTT
 FetchContent_Declare(
     EnTT
     GIT_REPOSITORY https://github.com/skypjack/entt.git
-    GIT_TAG f931687ff04d435871ac9664bb299f71f2a8fafc
+    GIT_TAG        fe8d7d78c4823e8a66a050bf86f5c6318cf76ce7
 )
 FetchContent_MakeAvailable(EnTT)
 
-#libhat
-FetchContent_Declare(
-    libhat
-    GIT_REPOSITORY https://github.com/BasedInc/libhat
-    GIT_TAG 37ee990ef49e07571e9a948f78cd597c84a639d9
-)
-FetchContent_MakeAvailable(libhat)
+add_library(Client SHARED main.cpp)
+add_subdirectory(src)
 
-add_library(Client SHARED)                                      # Set as DLL
-target_sources(Client PRIVATE main.cpp)                         # DLL entry point
-
-# External sub folders
-add_subdirectory(Client)
-add_subdirectory(Utils)
-add_subdirectory(Mem)
-add_subdirectory(SDK)
-
-add_compile_definitions(ENTT_SPARSE_PAGE=2048)
-add_compile_definitions(ENTT_PACKED_PAGE=128)
-
-target_link_libraries(Client PRIVATE minhook EnTT::EnTT libhat) # Target link libraries; MinHook, EnTT, libhat
+target_link_libraries(Client PRIVATE minhook libhat::libhat EnTT::EnTT)

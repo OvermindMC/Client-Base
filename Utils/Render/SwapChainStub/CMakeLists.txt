@@ -1,1 +1,0 @@
-target_sources(Client PRIVATE SwapChainStub.cpp)

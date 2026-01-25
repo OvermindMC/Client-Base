@@ -1,17 +1,17 @@
-#include "Client/Client.h"
+#include "src/Client.h"
 
-void init(HINSTANCE hInstance) {
-    Client* client = new Client("Client");
+void init(HINSTANCE hInst) {
+    auto client = std::make_unique<Client>();
+    client.reset();
 
-    delete client;
-    FreeLibraryAndExitThread(Mem::getDll(), 0);
+    FreeLibraryAndExitThread(Mem::GetDll(), 1);
 };
 
-BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD fdwReason, LPVOID lpRes) {
-
+BOOL WINAPI DllMain(HINSTANCE hInst, DWORD fdwReason, LPVOID lpRes) {
     if(fdwReason == DLL_PROCESS_ATTACH) {
-        CreateThread(0, 0, (LPTHREAD_START_ROUTINE)init, hInstance, 0, 0);
+        DisableThreadLibraryCalls(hInst);
+        CreateThread(0, 0, (LPTHREAD_START_ROUTINE)init, hInst, 0, 0);
     };
-
+    
     return TRUE;
 };
